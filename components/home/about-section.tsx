@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { BookOpen, GraduationCap, Award } from "lucide-react"
+import { homeData } from "@/lib/home-data"
 
 interface Highlight {
   icon: string
@@ -8,10 +9,10 @@ interface Highlight {
 }
 
 interface AboutProps {
-  section: string
-  title: string
-  paragraphs: string[]
-  highlights: Highlight[]
+  section?: string
+  title?: string
+  paragraphs?: string[]
+  highlights?: Highlight[]
 }
 
 const iconMap: Record<string, React.ReactNode> = {
@@ -20,7 +21,12 @@ const iconMap: Record<string, React.ReactNode> = {
   Award: <Award className="h-10 w-10 text-primary mb-4" />,
 }
 
-export function AboutSection({ section, title, paragraphs, highlights }: AboutProps) {
+export function AboutSection({ 
+  section = homeData.about.section, 
+  title = homeData.about.title, 
+  paragraphs = homeData.about.paragraphs, 
+  highlights = homeData.about.highlights 
+}: AboutProps) {
   return (
     <section id="about" className="py-20 px-4 bg-muted/30">
       <div className="container mx-auto max-w-6xl">

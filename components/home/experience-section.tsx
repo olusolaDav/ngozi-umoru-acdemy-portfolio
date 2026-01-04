@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card"
+import { homeData } from "@/lib/home-data"
 
 interface ExperienceItem {
   position: string
@@ -8,12 +9,16 @@ interface ExperienceItem {
 }
 
 interface ExperienceProps {
-  section: string
-  title: string
-  items: ExperienceItem[]
+  section?: string
+  title?: string
+  items?: ExperienceItem[]
 }
 
-export function ExperienceSection({ section, title, items }: ExperienceProps) {
+export function ExperienceSection({ 
+  section = homeData.experience.section, 
+  title = homeData.experience.title, 
+  items = homeData.experience.items 
+}: ExperienceProps) {
   return (
     <section id="experience" className="py-20 px-4">
       <div className="container mx-auto max-w-6xl">

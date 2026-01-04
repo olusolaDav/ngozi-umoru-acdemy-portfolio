@@ -21,7 +21,7 @@ export function Navigation() {
            <Link href="/" className="flex items-center gap-2 text-xl font-semibold">
                             <Avatar>
                               <AvatarImage src="/ngozi-icon.png" />
-                              <AvatarFallback>NU</AvatarFallback>
+                             
                           </Avatar>
                           <p>Ngozi B. Umoru</p>
                     

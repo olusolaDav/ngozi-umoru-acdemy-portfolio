@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { FileText, ExternalLink } from "lucide-react"
+import { homeData } from "@/lib/home-data"
 
 interface PublicationProfile {
   label: string
@@ -18,13 +19,18 @@ interface Publication {
 }
 
 interface PublicationsProps {
-  section: string
-  title: string
-  profiles: PublicationProfile[]
-  items: Publication[]
+  section?: string
+  title?: string
+  profiles?: PublicationProfile[]
+  items?: Publication[]
 }
 
-export function PublicationsSection({ section, title, profiles, items }: PublicationsProps) {
+export function PublicationsSection({ 
+  section = homeData.publications.section, 
+  title = homeData.publications.title, 
+  profiles = homeData.publications.profiles, 
+  items = homeData.publications.items 
+}: PublicationsProps) {
   return (
     <section id="publications" className="py-20 px-4">
       <div className="container mx-auto max-w-6xl">

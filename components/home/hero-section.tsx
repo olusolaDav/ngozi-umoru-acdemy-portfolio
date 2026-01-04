@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { homeData } from "@/lib/home-data"
 
 interface HeroProps {
   badge?: string
@@ -10,11 +11,11 @@ interface HeroProps {
 }
 
 export function HeroSection({ 
-  badge = "Academic Portfolio",
-  name = "Loading...", 
-  credentials = "", 
-  description = "Loading content...", 
-  profileImage = "/placeholder.jpg" 
+  badge = homeData.hero.badge,
+  name = homeData.hero.name, 
+  credentials = homeData.hero.credentials, 
+  description = homeData.hero.description, 
+  profileImage = homeData.hero.profileImage 
 }: HeroProps) {
   return (
     <section className="pt-32 pb-20 px-4">

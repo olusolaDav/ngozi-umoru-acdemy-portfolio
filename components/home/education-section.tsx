@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { GraduationCap } from "lucide-react"
+import { homeData } from "@/lib/home-data"
 
 interface EducationItem {
   degree: string
@@ -8,12 +9,16 @@ interface EducationItem {
 }
 
 interface EducationProps {
-  section: string
-  title: string
-  items: EducationItem[]
+  section?: string
+  title?: string
+  items?: EducationItem[]
 }
 
-export function EducationSection({ section, title, items }: EducationProps) {
+export function EducationSection({ 
+  section = homeData.education.section, 
+  title = homeData.education.title, 
+  items = homeData.education.items 
+}: EducationProps) {
   return (
     <section id="education" className="py-20 px-4 bg-muted/30">
       <div className="container mx-auto max-w-6xl">
