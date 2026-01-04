@@ -10,13 +10,13 @@ interface HeroProps {
   profileImage?: string
 }
 
-export function HeroSection({ 
-  badge = homeData.hero.badge,
-  name = homeData.hero.name, 
-  credentials = homeData.hero.credentials, 
-  description = homeData.hero.description, 
-  profileImage = homeData.hero.profileImage 
-}: HeroProps) {
+export function HeroSection(props: HeroProps) {
+  // Use props if provided, otherwise fall back to homeData defaults
+  const badge = props.badge ?? homeData.hero.badge
+  const name = props.name ?? homeData.hero.name
+  const credentials = props.credentials ?? homeData.hero.credentials
+  const description = props.description ?? homeData.hero.description
+  const profileImage = props.profileImage ?? homeData.hero.profileImage
   return (
     <section className="pt-32 pb-20 px-4">
       <div className="container mx-auto max-w-6xl">

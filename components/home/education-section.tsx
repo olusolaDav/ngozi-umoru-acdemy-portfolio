@@ -14,11 +14,11 @@ interface EducationProps {
   items?: EducationItem[]
 }
 
-export function EducationSection({ 
-  section = homeData.education.section, 
-  title = homeData.education.title, 
-  items = homeData.education.items 
-}: EducationProps) {
+export function EducationSection(props: EducationProps) {
+  // Use props if provided, otherwise fall back to homeData defaults
+  const section = props.section ?? homeData.education.section
+  const title = props.title ?? homeData.education.title
+  const items = props.items ?? homeData.education.items
   return (
     <section id="education" className="py-20 px-4 bg-muted/30">
       <div className="container mx-auto max-w-6xl">

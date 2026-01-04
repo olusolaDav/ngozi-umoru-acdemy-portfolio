@@ -21,12 +21,12 @@ const iconMap: Record<string, React.ReactNode> = {
   Award: <Award className="h-10 w-10 text-primary mb-4" />,
 }
 
-export function AboutSection({ 
-  section = homeData.about.section, 
-  title = homeData.about.title, 
-  paragraphs = homeData.about.paragraphs, 
-  highlights = homeData.about.highlights 
-}: AboutProps) {
+export function AboutSection(props: AboutProps) {
+  // Use props if provided, otherwise fall back to homeData defaults
+  const section = props.section ?? homeData.about.section
+  const title = props.title ?? homeData.about.title
+  const paragraphs = props.paragraphs ?? homeData.about.paragraphs
+  const highlights = props.highlights ?? homeData.about.highlights
   return (
     <section id="about" className="py-20 px-4 bg-muted/30">
       <div className="container mx-auto max-w-6xl">

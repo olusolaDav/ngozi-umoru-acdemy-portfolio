@@ -14,11 +14,11 @@ interface ExperienceProps {
   items?: ExperienceItem[]
 }
 
-export function ExperienceSection({ 
-  section = homeData.experience.section, 
-  title = homeData.experience.title, 
-  items = homeData.experience.items 
-}: ExperienceProps) {
+export function ExperienceSection(props: ExperienceProps) {
+  // Use props if provided, otherwise fall back to homeData defaults
+  const section = props.section ?? homeData.experience.section
+  const title = props.title ?? homeData.experience.title
+  const items = props.items ?? homeData.experience.items
   return (
     <section id="experience" className="py-20 px-4">
       <div className="container mx-auto max-w-6xl">

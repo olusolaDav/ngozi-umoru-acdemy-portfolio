@@ -25,12 +25,12 @@ interface PublicationsProps {
   items?: Publication[]
 }
 
-export function PublicationsSection({ 
-  section = homeData.publications.section, 
-  title = homeData.publications.title, 
-  profiles = homeData.publications.profiles, 
-  items = homeData.publications.items 
-}: PublicationsProps) {
+export function PublicationsSection(props: PublicationsProps) {
+  // Use props if provided, otherwise fall back to homeData defaults
+  const section = props.section ?? homeData.publications.section
+  const title = props.title ?? homeData.publications.title
+  const profiles = props.profiles ?? homeData.publications.profiles
+  const items = props.items ?? homeData.publications.items
   return (
     <section id="publications" className="py-20 px-4">
       <div className="container mx-auto max-w-6xl">
