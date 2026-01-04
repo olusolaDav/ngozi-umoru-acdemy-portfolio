@@ -29,9 +29,19 @@ import { ResourcesPreviewSection } from "@/components/home/resources-preview-sec
 import { BlogPreviewSection } from "@/components/home/blog-preview-section"
 
 import { Navigation } from "@/components/navigation"
+
+// Check if we're in build/static generation mode
+const isBuildTime = process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL && typeof window === 'undefined'
+
 async function getSiteContent() {
+  // Skip fetching during build time to avoid static generation errors
+  if (isBuildTime) {
+    return null
+  }
+  
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:4000'}/api/admin/site`, {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:4000')
+    const res = await fetch(`${baseUrl}/api/admin/site`, {
       cache: 'no-store' // Ensure we get latest content
     })
     if (!res.ok) throw new Error('Failed to fetch')

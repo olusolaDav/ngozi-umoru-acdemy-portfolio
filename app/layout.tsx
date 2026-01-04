@@ -7,6 +7,9 @@ import "./globals.css"
 import { AuthProvider } from "@/lib/hooks/use-auth"
 import { getSiteMetadata, generateMetadata, generateStructuredData, defaultMetadataFallback } from "@/lib/metadata-service"
 
+// Force dynamic rendering for the entire app since we fetch site metadata
+export const dynamic = 'force-dynamic'
+
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
