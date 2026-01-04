@@ -63,7 +63,7 @@ export async function POST(req: Request) {
     uploadFormData.append("folder", "resources")
 
     const uploadResponse = await fetch(
-      `${process.env.APP_URL || "http://localhost:4000"}/api/upload/file`,
+      `${process.env.APP_URL || "https://ngoziumoru.info"}/api/upload/file`,
       {
         method: "POST",
         body: uploadFormData,

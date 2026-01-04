@@ -17,7 +17,7 @@ export async function getSiteMetadata(): Promise<SiteMetadata | null> {
   }
   
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:4000')
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://ngoziumoru.info')
     const res = await fetch(`${baseUrl}/api/admin/site`, {
       cache: 'no-store',
       next: { revalidate: 0 }
