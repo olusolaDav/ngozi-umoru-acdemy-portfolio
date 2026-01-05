@@ -9,6 +9,20 @@ import type { SiteMetadata } from "./site-types"
 // Check if we're in build/static generation mode
 const isBuildTime = process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL && typeof window === 'undefined'
 
+// Get the base URL for API calls - use localhost for development
+function getBaseUrl(): string {
+  // In development, always use localhost
+  if (process.env.NODE_ENV === 'development') {
+    return 'http://localhost:4000'
+  }
+  // In production on Vercel
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`
+  }
+  // Fallback to configured base URL or production URL
+  return process.env.NEXT_PUBLIC_BASE_URL || 'https://ngoziumoru.info'
+}
+
 // Fetch site metadata from API
 export async function getSiteMetadata(): Promise<SiteMetadata | null> {
   // Skip fetching during build time to avoid static generation errors
@@ -17,7 +31,7 @@ export async function getSiteMetadata(): Promise<SiteMetadata | null> {
   }
   
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://ngoziumoru.info')
+    const baseUrl = getBaseUrl()
     const res = await fetch(`${baseUrl}/api/admin/site`, {
       cache: 'no-store',
       next: { revalidate: 0 }

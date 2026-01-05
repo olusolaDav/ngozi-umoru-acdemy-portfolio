@@ -1,6 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { GraduationCap } from "lucide-react"
-import { homeData } from "@/lib/home-data"
 
 interface EducationItem {
   degree: string
@@ -15,10 +14,7 @@ interface EducationProps {
 }
 
 export function EducationSection(props: EducationProps) {
-  // Use props if provided, otherwise fall back to homeData defaults
-  const section = props.section ?? homeData.education.section
-  const title = props.title ?? homeData.education.title
-  const items = props.items ?? homeData.education.items
+  const { section, title, items = [] } = props
   return (
     <section id="education" className="py-20 px-4 bg-muted/30">
       <div className="container mx-auto max-w-6xl">
