@@ -42,6 +42,8 @@ export async function GET(req: Request) {
           emailNotifications: true,
           contactFormAlerts: true,
           blogCommentAlerts: true,
+          commentReplyAlerts: true,
+          loginAlerts: true,
           weeklyDigest: false,
         },
         security: {
@@ -58,6 +60,8 @@ export async function GET(req: Request) {
         emailNotifications: true,
         contactFormAlerts: true,
         blogCommentAlerts: true,
+        commentReplyAlerts: true,
+        loginAlerts: true,
         weeklyDigest: false,
       },
       security: settings.security || {
@@ -102,6 +106,8 @@ export async function PUT(req: Request) {
         emailNotifications: body.notifications.emailNotifications ?? true,
         contactFormAlerts: body.notifications.contactFormAlerts ?? true,
         blogCommentAlerts: body.notifications.blogCommentAlerts ?? true,
+        commentReplyAlerts: body.notifications.commentReplyAlerts ?? true,
+        loginAlerts: body.notifications.loginAlerts ?? true,
         weeklyDigest: body.notifications.weeklyDigest ?? false,
       }
     }

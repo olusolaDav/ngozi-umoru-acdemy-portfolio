@@ -9,7 +9,7 @@
 // =========================
 export interface SocialLink {
   id: string
-  platform: "linkedin" | "facebook" | "twitter" | "instagram" | "researchgate" | "googlescholar" | "orcid" | "github" | "youtube" | "other"
+  platform: "linkedin" | "facebook" | "twitter" | "instagram" | "researchgate" | "googlescholar" | "orcid" | "github" | "youtube" | "tiktok" | "whatsapp" | "telegram" | "pinterest" | "threads" | "other"
   url: string
   label: string
   icon: string // Lucide icon name
@@ -246,11 +246,17 @@ export const SOCIAL_PLATFORMS = [
   { id: "facebook", label: "Facebook", icon: "Facebook", placeholder: "https://facebook.com/username" },
   { id: "twitter", label: "Twitter/X", icon: "Twitter", placeholder: "https://twitter.com/username" },
   { id: "instagram", label: "Instagram", icon: "Instagram", placeholder: "https://instagram.com/username" },
+  { id: "youtube", label: "YouTube", icon: "Youtube", placeholder: "https://youtube.com/@channel" },
+  { id: "tiktok", label: "TikTok", icon: "Music", placeholder: "https://tiktok.com/@username" },
   { id: "researchgate", label: "ResearchGate", icon: "FileText", placeholder: "https://researchgate.net/profile/..." },
   { id: "googlescholar", label: "Google Scholar", icon: "GraduationCap", placeholder: "https://scholar.google.com/citations?user=..." },
   { id: "orcid", label: "ORCID", icon: "CircleUser", placeholder: "https://orcid.org/0000-0000-0000-0000" },
   { id: "github", label: "GitHub", icon: "Github", placeholder: "https://github.com/username" },
-  { id: "youtube", label: "YouTube", icon: "Youtube", placeholder: "https://youtube.com/@channel" },
+  { id: "whatsapp", label: "WhatsApp", icon: "MessageCircle", placeholder: "https://wa.me/1234567890" },
+  { id: "telegram", label: "Telegram", icon: "Send", placeholder: "https://t.me/username" },
+  { id: "pinterest", label: "Pinterest", icon: "Pin", placeholder: "https://pinterest.com/username" },
+  { id: "threads", label: "Threads", icon: "AtSign", placeholder: "https://threads.net/@username" },
+  { id: "other", label: "Other", icon: "Link2", placeholder: "https://..." },
 ] as const
 
 // =========================

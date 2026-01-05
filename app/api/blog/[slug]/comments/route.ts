@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { createComment, listPublishedCommentsByPost, getBlogBySlug } from "@/lib/blog"
+import { notifyNewComment } from "@/lib/notifications/notification-service"
 
 export async function GET(req: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
@@ -25,7 +26,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ slug: s
   try {
     const { slug } = await params
     const body = await req.json()
-    const { name, subject, message, parentId } = body
+    const { name, email, subject, message, parentId } = body
 
     if (!name || !message) {
       return NextResponse.json({ error: "name and message are required" }, { status: 400 })
@@ -41,10 +42,28 @@ export async function POST(req: Request, { params }: { params: Promise<{ slug: s
       postSlug: post.slug,
       postTitle: post.title,
       authorName: name,
+      authorEmail: email,
       subject,
       content: message,
       parentId,
     })
+
+    // Create notification for admin
+    try {
+      await notifyNewComment({
+        id: comment._id?.toString() || "",
+        postId: post._id.toString(),
+        postTitle: post.title,
+        postSlug: post.slug,
+        authorName: name,
+        authorEmail: email || "",
+        content: message,
+        parentCommentId: parentId,
+        createdAt: new Date(),
+      })
+    } catch (notifError) {
+      console.error("Failed to create comment notification:", notifError)
+    }
 
     return NextResponse.json({ 
       ok: true, 

@@ -82,7 +82,7 @@ export const defaultFooter: FooterContent = {
   
   // Contact info
   contact: {
-    email: "ngoziblessingumoru@gmail.com",
+    email: "hello@ngoziumoru.info",
     phone: undefined,
     location: "United Kingdom",
   },

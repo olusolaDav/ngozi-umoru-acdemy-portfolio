@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getDb } from "@/lib/mongodb"
 import { sendEmail } from "@/lib/email"
+import { notifyNewContact } from "@/lib/notifications/notification-service"
+import { verifySession } from "@/lib/auth"
 
-// Department labels for better display
-const departmentLabels: Record<string, string> = {
+// Purpose labels for better display
+const purposeLabels: Record<string, string> = {
   "general": "General Inquiry",
   "collaboration": "Collaboration Opportunity",
   "research": "Research Query",
@@ -11,26 +13,73 @@ const departmentLabels: Record<string, string> = {
   "speaking": "Speaking Engagement",
 }
 
+function parseCookies(cookieHeader: string | null) {
+  if (!cookieHeader) return {}
+  return Object.fromEntries(
+    cookieHeader
+      .split(";")
+      .map(c => c.trim().split("="))
+      .map(([k, v]) => [k, decodeURIComponent(v || "")])
+  )
+}
+
+// GET - Fetch contacts (admin only)
+export async function GET(req: NextRequest) {
+  try {
+    const cookieHeader = req.headers.get("cookie")
+    const cookies = parseCookies(cookieHeader)
+    const session = cookies.session
+
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const payload = verifySession(session)
+    if (!payload || (payload as any).role !== "admin") {
+      return NextResponse.json({ error: "Admin access required" }, { status: 403 })
+    }
+
+    const db = await getDb()
+    const contacts = await db
+      .collection("contact_submissions")
+      .find({})
+      .sort({ createdAt: -1 })
+      .toArray()
+
+    // Transform _id to string
+    const transformedContacts = contacts.map((c: any) => ({
+      ...c,
+      _id: c._id.toString(),
+      name: c.fullName,
+    }))
+
+    return NextResponse.json({ contacts: transformedContacts })
+  } catch (error) {
+    console.error("GET /api/contact error:", error)
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  }
+}
+
 // Email template for admin notification
 function adminNotificationTemplate(data: {
   fullName: string
   email: string
   phone?: string
-  department: string
+  purpose: string
   message: string
   submittedAt: string
 }) {
-  const departmentLabel = departmentLabels[data.department] || data.department
+  const purposeLabel = purposeLabels[data.purpose] || data.purpose
   
   return {
-    subject: `New Contact Form Submission - ${departmentLabel}`,
+    subject: `New Contact Form Submission - ${purposeLabel}`,
     text: `
 New Contact Form Submission
 
 From: ${data.fullName}
 Email: ${data.email}
 Phone: ${data.phone || "Not provided"}
-Department: ${departmentLabel}
+Purpose: ${purposeLabel}
 
 Message:
 ${data.message}
@@ -64,8 +113,8 @@ This is an automated notification from Academic Portfolio Contact Form.
     </div>
     <div class="content">
       <div class="field">
-        <div class="label">Department</div>
-        <div class="value"><span class="badge">${departmentLabel}</span></div>
+        <div class="label">Purpose</div>
+        <div class="value"><span class="badge">${purposeLabel}</span></div>
       </div>
       <div class="field">
         <div class="label">From</div>
@@ -101,10 +150,10 @@ This is an automated notification from Academic Portfolio Contact Form.
 // Email template for user confirmation
 function userConfirmationTemplate(data: {
   fullName: string
-  department: string
+  purpose: string
   message: string
 }) {
-  const departmentLabel = departmentLabels[data.department] || data.department
+  const purposeLabel = purposeLabels[data.purpose] || data.purpose
   
   return {
     subject: `We've received your message - Dr. Ngozi Blessing Umoru`,
@@ -113,7 +162,7 @@ Hello ${data.fullName},
 
 Thank you for contacting me!
 
-I have received your message regarding "${departmentLabel}" and will review it shortly. You can expect a response within 24-48 business hours.
+I have received your message regarding "${purposeLabel}" and will review it shortly. You can expect a response within 24-48 business hours.
 
 Your Message:
 ${data.message}
@@ -149,7 +198,7 @@ This is an automated confirmation. Please do not reply to this email.
     <div class="content">
       <p>Hello <strong>${data.fullName}</strong>,</p>
       <p>Thank you for contacting me!</p>
-      <p>I have received your message regarding <span class="badge">${departmentLabel}</span> and will review it shortly. You can expect a response within <strong>24-48 business hours</strong>.</p>
+      <p>I have received your message regarding <span class="badge">${purposeLabel}</span> and will review it shortly. You can expect a response within <strong>24-48 business hours</strong>.</p>
       
       <div class="message-box">
         <p style="margin: 0 0 10px 0; font-weight: bold; color: #374151;">Your Message:</p>
@@ -174,10 +223,10 @@ This is an automated confirmation. Please do not reply to this email.
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { fullName, email, department, phone, message, agreePolicy } = body
+    const { fullName, email, purpose, phone, message, agreePolicy } = body
 
     // Validation
-    if (!fullName || !email || !department || !message) {
+    if (!fullName || !email || !purpose || !message) {
       return NextResponse.json(
         { error: "Please fill in all required fields" },
         { status: 400 }
@@ -207,7 +256,7 @@ export async function POST(request: NextRequest) {
     const contactSubmission = {
       fullName,
       email,
-      department,
+      purpose,
       phone: phone || null,
       message,
       agreedToPolicy: agreePolicy,
@@ -218,32 +267,32 @@ export async function POST(request: NextRequest) {
     }
 
     const result = await db.collection("contact_submissions").insertOne(contactSubmission)
+    console.log("[POST /api/contact] Contact saved with ID:", result.insertedId.toString())
 
-    // Send email to admin - using the configured email for testing
-    const adminEmail = process.env.ADMIN_EMAIL || "hello@ngoziumoru.info"
+    // Create in-app notification for admin (with optional email)
     try {
-      const adminTemplate = adminNotificationTemplate({
+      console.log("[POST /api/contact] Calling notifyNewContact...")
+      await notifyNewContact({
+        id: result.insertedId.toString(),
         fullName,
         email,
         phone,
-        department,
+        purpose,
+        subject: purposeLabels[purpose] || purpose,
         message,
-        submittedAt,
+        submittedAt: new Date(submittedAt),
       })
-      await sendEmail({
-        to: adminEmail,
-        ...adminTemplate,
-      })
-    } catch (emailError) {
-      console.error("Failed to send admin notification email:", emailError)
-      // Don't fail the request if email fails
+      console.log("[POST /api/contact] notifyNewContact completed")
+    } catch (notifError) {
+      console.error("[POST /api/contact] Failed to create notification:", notifError)
+      // Don't fail the request if notification fails
     }
 
     // Send confirmation email to user
     try {
       const userTemplate = userConfirmationTemplate({
         fullName,
-        department,
+        purpose,
         message,
       })
       await sendEmail({

@@ -10,7 +10,7 @@ interface ContactSubmission {
   _id: string
   fullName: string
   email: string
-  department: string
+  purpose: string
   message: string
 }
 
@@ -20,7 +20,7 @@ interface ReplyComposerProps {
   onSent: () => void
 }
 
-const departmentLabels: Record<string, string> = {
+const purposeLabels: Record<string, string> = {
   "general": "General Inquiry",
   "collaboration": "Collaboration Opportunity",
   "research": "Research Query",
@@ -33,7 +33,7 @@ export function ReplyComposer({ contact, onClose, onSent }: ReplyComposerProps) 
   const [isMaximized, setIsMaximized] = useState(false)
   const [isSending, setIsSending] = useState(false)
   const [subject, setSubject] = useState(
-    `Re: ${departmentLabels[contact.department] || contact.department} - Academic Portfolio`
+    `Re: ${purposeLabels[contact.purpose] || contact.purpose} - Academic Portfolio`
   )
   const [content, setContent] = useState("")
 

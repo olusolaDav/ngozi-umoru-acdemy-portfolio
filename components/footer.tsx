@@ -42,11 +42,11 @@ export function Footer() {
             <h3 className="font-semibold text-lg mb-4">Connect</h3>
             <div className="flex flex-col gap-3">
               <a
-                href="mailto:ngoziblessingumoru@gmail.com"
+                href="mailto:hello@ngoziumoru.info"
                 className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 <Mail className="h-4 w-4" />
-                ngoziblessingumoru@gmail.com
+                hello@ngoziumoru.info
               </a>
               <a
                 href="https://www.researchgate.net/scientific-contributions/Ngozi-Blessing-Umoru-2330422223"

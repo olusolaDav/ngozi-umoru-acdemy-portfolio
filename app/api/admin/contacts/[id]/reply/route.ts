@@ -129,7 +129,7 @@ export async function POST(
     // Send the reply email
     const emailTemplate = replyEmailTemplate({
       recipientName: recipientName || submission.fullName,
-      subject: subject || `Re: ${submission.department} - Academic Portfolio`,
+      subject: subject || `Re: ${submission.purpose} - Academic Portfolio`,
       content,
       originalMessage: submission.message,
     })

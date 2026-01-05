@@ -14,6 +14,8 @@ interface NotificationSettings {
   emailNotifications: boolean
   contactFormAlerts: boolean
   blogCommentAlerts: boolean
+  commentReplyAlerts: boolean
+  loginAlerts: boolean
   weeklyDigest: boolean
 }
 
@@ -34,6 +36,8 @@ export default function AdminSettingsPage() {
     emailNotifications: true,
     contactFormAlerts: true,
     blogCommentAlerts: true,
+    commentReplyAlerts: true,
+    loginAlerts: true,
     weeklyDigest: false,
   })
 
@@ -223,6 +227,28 @@ export default function AdminSettingsPage() {
                 <Switch
                   checked={notifications.blogCommentAlerts}
                   onCheckedChange={(checked) => setNotifications({ ...notifications, blogCommentAlerts: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between p-4 rounded-lg border border-gray-100 dark:border-gray-800">
+                <div>
+                  <p className="font-medium text-gray-900 dark:text-gray-50">Comment Reply Alerts</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Get notified when someone replies to a comment</p>
+                </div>
+                <Switch
+                  checked={notifications.commentReplyAlerts}
+                  onCheckedChange={(checked) => setNotifications({ ...notifications, commentReplyAlerts: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between p-4 rounded-lg border border-gray-100 dark:border-gray-800">
+                <div>
+                  <p className="font-medium text-gray-900 dark:text-gray-50">Login Alerts</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Get email alerts when you log in from a new location</p>
+                </div>
+                <Switch
+                  checked={notifications.loginAlerts}
+                  onCheckedChange={(checked) => setNotifications({ ...notifications, loginAlerts: checked })}
                 />
               </div>
 

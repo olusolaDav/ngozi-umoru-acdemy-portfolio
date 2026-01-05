@@ -20,7 +20,7 @@ interface ContactSubmission {
   _id: string
   fullName: string
   email: string
-  department: string
+  purpose: string
   phone?: string
   message: string
   status: "unread" | "read" | "replied"
@@ -37,7 +37,7 @@ interface ContactViewModalProps {
   onOpenReplyComposer?: (contact: ContactSubmission) => void
 }
 
-const departmentLabels: Record<string, string> = {
+const purposeLabels: Record<string, string> = {
   "general": "General Inquiry",
   "collaboration": "Collaboration Opportunity",
   "research": "Research Query",
@@ -45,7 +45,7 @@ const departmentLabels: Record<string, string> = {
   "speaking": "Speaking Engagement",
 }
 
-const departmentColors: Record<string, string> = {
+const purposeColors: Record<string, string> = {
   "general": "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
   "collaboration": "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
   "research": "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400",
@@ -90,7 +90,7 @@ export function ContactViewModal({
   const handleReplyViaMail = () => {
     // Open email client
     const subject = encodeURIComponent(
-      `Re: ${departmentLabels[contact.department] || contact.department} - Academic Portfolio`
+      `Re: ${purposeLabels[contact.purpose] || contact.purpose} - Academic Portfolio`
     )
     const body = encodeURIComponent(
       `\n\n---\nOriginal Message:\nFrom: ${contact.fullName}\nDate: ${formatDate(contact.submittedAt || contact.createdAt)}\n\n${contact.message}`
@@ -117,8 +117,8 @@ export function ContactViewModal({
             <div>
               <DialogTitle className="text-xl">{contact.fullName}</DialogTitle>
               <div className="flex items-center gap-2 mt-2">
-                <Badge className={departmentColors[contact.department] || departmentColors.general}>
-                  {departmentLabels[contact.department] || contact.department}
+                <Badge className={purposeColors[contact.purpose] || purposeColors.general}>
+                  {purposeLabels[contact.purpose] || contact.purpose}
                 </Badge>
                 <Badge className={statusColors[contact.status]}>
                   {contact.status}
@@ -161,9 +161,9 @@ export function ContactViewModal({
             <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
               <Building2 className="h-5 w-5 text-muted-foreground shrink-0" />
               <div className="min-w-0">
-                <p className="text-xs text-muted-foreground">Department</p>
+                <p className="text-xs text-muted-foreground">Purpose</p>
                 <p className="text-sm font-medium">
-                  {departmentLabels[contact.department] || contact.department}
+                  {purposeLabels[contact.purpose] || contact.purpose}
                 </p>
               </div>
             </div>

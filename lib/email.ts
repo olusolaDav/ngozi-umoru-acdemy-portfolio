@@ -22,7 +22,14 @@ async function getTransporter() {
   const looksLikePlaceholder = (v?: string) => !v || v.includes('ethereal') || v.includes('your-')
 
   if (host && port && credsPresent && !looksLikePlaceholder(user) && !looksLikePlaceholder(pass)) {
-    transporter = nodemailer.createTransport({ host, port, auth: { user, pass }, tls: { rejectUnauthorized: process.env.MONGODB_TLS_ALLOW_INVALID !== 'true' } })
+    console.log('Using configured SMTP:', host, port)
+    transporter = nodemailer.createTransport({ 
+      host, 
+      port, 
+      secure: port === 465, // true for 465, false for other ports
+      auth: { user, pass }, 
+      tls: { rejectUnauthorized: false } // Allow self-signed certificates
+    })
     return transporter
   }
 

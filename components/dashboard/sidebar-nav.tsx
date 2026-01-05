@@ -20,10 +20,12 @@ import {
   ClipboardCheck,
   UserCircle,
   MessageSquare,
+  Bell,
 } from "lucide-react"
 import { useState, useEffect } from "react"
 import { LogoutConfirmModal } from "@/components/dashboard/logout-confirm-modal"
 import { useAuth } from "@/lib/hooks/use-auth"
+import { Badge } from "@/components/ui/badge"
 
 import {
   Avatar,
@@ -35,6 +37,7 @@ interface NavItem {
   title: string
   href: string
   icon: React.ElementType
+  badge?: number
   children?: { title: string; href: string }[]
 }
 
@@ -45,6 +48,7 @@ const adminNav: NavItem[] = [
   { title: "Contacts", href: "/admin/contacts", icon: MessageSquare },
   { title: "Resources", href: "/admin/resources", icon: Diamond },
   { title: "Blog", href: "/admin/blog", icon: BookOpen },
+  { title: "Notifications", href: "/admin/notifications", icon: Bell },
   { title: "Settings", href: "/admin/settings", icon: Settings },
 ]
 
@@ -64,10 +68,11 @@ interface SidebarNavProps {
 
 export function SidebarNav({ role, isCollapsed = false, onToggleCollapse }: SidebarNavProps) {
   const pathname = usePathname()
-  const navItems = navByRole[role]
+  const [navItems, setNavItems] = useState<NavItem[]>(navByRole[role])
   const [collabChildren, setCollabChildren] = useState<{ title: string; href: string }[] | null>(null)
   const [expandedItems, setExpandedItems] = useState<string[]>([])
   const [showLogout, setShowLogout] = useState(false)
+  const [unreadCounts, setUnreadCounts] = useState({ contacts: 0, notifications: 0 })
   const { logout } = useAuth()
 
   const toggleExpand = (title: string) => {
@@ -80,6 +85,50 @@ export function SidebarNav({ role, isCollapsed = false, onToggleCollapse }: Side
     }
     return pathname.startsWith(href)
   }
+
+  // Fetch unread counts for contacts and notifications
+  useEffect(() => {
+    if (role !== "admin") return
+
+    const fetchUnreadCounts = async () => {
+      try {
+        // Fetch contacts
+        const contactRes = await fetch("/api/contact")
+        const contactData = await contactRes.json()
+        const contacts = contactData.contacts || []
+        const unreadContacts = contacts.filter((c: { status: string }) => 
+          c.status === "new" || c.status === "unread"
+        ).length
+
+        // Fetch notifications
+        const notifRes = await fetch("/api/notifications?countOnly=true")
+        const notifData = await notifRes.json()
+        const unreadNotifications = notifData.unreadCount || 0
+
+        setUnreadCounts({ contacts: unreadContacts, notifications: unreadNotifications })
+
+        // Update nav items with badges
+        setNavItems((prev) =>
+          prev.map((item) => {
+            if (item.title === "Contacts") {
+              return { ...item, badge: unreadContacts }
+            }
+            if (item.title === "Notifications") {
+              return { ...item, badge: unreadNotifications }
+            }
+            return item
+          })
+        )
+      } catch (error) {
+        console.error("Failed to fetch unread counts:", error)
+      }
+    }
+
+    fetchUnreadCounts()
+    // Refresh counts every 30 seconds
+    const interval = setInterval(fetchUnreadCounts, 30000)
+    return () => clearInterval(interval)
+  }, [role])
 
   // If collaborator role, fetch assigned forms and limit the Forms children
   useEffect(() => {
@@ -187,14 +236,31 @@ export function SidebarNav({ role, isCollapsed = false, onToggleCollapse }: Side
                 <Link
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                    "flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                     active
                       ? "bg-primary/10 text-primary"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground",
                   )}
                 >
-                  <Icon className="h-5 w-5" />
-                  {!isCollapsed && <span>{item.title}</span>}
+                  <div className="flex items-center gap-3">
+                    <Icon className="h-5 w-5" />
+                    {!isCollapsed && <span>{item.title}</span>}
+                  </div>
+                  {!isCollapsed && item.badge !== undefined && item.badge > 0 && (
+                    <Badge 
+                      variant="secondary" 
+                      className={cn(
+                        "h-5 min-w-[20px] px-1.5 text-xs font-semibold",
+                        item.title === "Contacts" && "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-400",
+                        item.title === "Notifications" && "bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-400"
+                      )}
+                    >
+                      {item.badge > 99 ? "99+" : item.badge}
+                    </Badge>
+                  )}
+                  {isCollapsed && item.badge !== undefined && item.badge > 0 && (
+                    <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500" />
+                  )}
                 </Link>
               )}
 

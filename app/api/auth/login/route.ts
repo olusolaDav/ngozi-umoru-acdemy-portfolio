@@ -46,8 +46,17 @@ export async function POST(req: Request) {
     expiresAt: new Date(Date.now() + 15 * 60 * 1000) // Session valid for 15 min
   })
 
-  const tpl = otpEmailTemplate({ code })
-  await sendEmail({ to: email, subject: tpl.subject, text: tpl.text, html: tpl.html })
+  // Send verification email
+  try {
+    const tpl = otpEmailTemplate({ code })
+    const emailResult = await sendEmail({ to: email, subject: tpl.subject, text: tpl.text, html: tpl.html })
+    console.log("Verification code email sent successfully to:", email, "Code:", code)
+  } catch (emailError) {
+    console.error("Failed to send verification email:", emailError)
+    // Delete the session since email failed
+    await loginSessions.deleteOne({ sessionId })
+    return NextResponse.json({ error: "Failed to send verification email. Please try again." }, { status: 500 })
+  }
 
   return NextResponse.json({ requiresVerification: true, sessionId })
 }

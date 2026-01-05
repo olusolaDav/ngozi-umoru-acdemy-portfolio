@@ -15,12 +15,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 export type ContactSubmission = {
   _id: string
   fullName: string
   email: string
-  department: string
+  purpose: string
   phone?: string
   message: string
   status: "unread" | "read" | "replied"
@@ -46,7 +56,7 @@ interface ContactsResponse {
   }
 }
 
-const departmentLabels: Record<string, string> = {
+const purposeLabels: Record<string, string> = {
   "general": "General Inquiry",
   "collaboration": "Collaboration Opportunity",
   "research": "Research Query",
@@ -60,7 +70,7 @@ const statusColors: Record<string, string> = {
   replied: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
 }
 
-const departmentColors: Record<string, string> = {
+const purposeColors: Record<string, string> = {
   "general": "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
   "collaboration": "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
   "research": "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400",
@@ -72,7 +82,7 @@ export default function AdminContactsPage() {
   const [search, setSearch] = useState("")
   const [sort, setSort] = useState("newest")
   const [statusFilter, setStatusFilter] = useState("all")
-  const [departmentFilter, setDepartmentFilter] = useState("all")
+  const [purposeFilter, setPurposeFilter] = useState("all")
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [submissions, setSubmissions] = useState<ContactSubmission[]>([])
@@ -81,6 +91,7 @@ export default function AdminContactsPage() {
   const [loading, setLoading] = useState(true)
   const [selectedContact, setSelectedContact] = useState<ContactSubmission | null>(null)
   const [replyContact, setReplyContact] = useState<ContactSubmission | null>(null)
+  const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; id: string | null; name: string }>({ open: false, id: null, name: "" })
   const itemsPerPage = 12
 
   // Fetch submissions from API
@@ -90,7 +101,7 @@ export default function AdminContactsPage() {
       const params = new URLSearchParams({
         search,
         status: statusFilter,
-        department: departmentFilter,
+        purpose: purposeFilter,
         page: currentPage.toString(),
         limit: itemsPerPage.toString(),
         sort
@@ -114,7 +125,7 @@ export default function AdminContactsPage() {
   // Fetch submissions on mount and when filters change
   useEffect(() => {
     fetchSubmissions()
-  }, [search, sort, statusFilter, departmentFilter, currentPage])
+  }, [search, sort, statusFilter, purposeFilter, currentPage])
 
   // Mark as read when viewing
   const handleViewContact = async (contact: ContactSubmission) => {
@@ -166,21 +177,27 @@ export default function AdminContactsPage() {
   }
 
   // Delete submission
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this submission?")) return
+  const handleDeleteClick = (submission: ContactSubmission) => {
+    setDeleteConfirm({ open: true, id: submission._id, name: submission.fullName })
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteConfirm.id) return
 
     try {
-      const response = await fetch(`/api/admin/contacts/${id}`, {
+      const response = await fetch(`/api/admin/contacts/${deleteConfirm.id}`, {
         method: "DELETE",
       })
 
       if (!response.ok) throw new Error("Failed to delete")
 
-      toast.success("Submission deleted")
+      toast.success("Submission deleted successfully")
       fetchSubmissions()
     } catch (error) {
       console.error("Error deleting submission:", error)
       toast.error("Failed to delete submission")
+    } finally {
+      setDeleteConfirm({ open: false, id: null, name: "" })
     }
   }
 
@@ -289,12 +306,12 @@ export default function AdminContactsPage() {
             <SelectItem value="replied">Replied</SelectItem>
           </SelectContent>
         </Select>
-        <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
+        <Select value={purposeFilter} onValueChange={setPurposeFilter}>
           <SelectTrigger className="w-[180px] bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
-            <SelectValue placeholder="Department" />
+            <SelectValue placeholder="Purpose" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Departments</SelectItem>
+            <SelectItem value="all">All Purposes</SelectItem>
             <SelectItem value="general">General Inquiry</SelectItem>
             <SelectItem value="collaboration">Collaboration Opportunity</SelectItem>
             <SelectItem value="research">Research Query</SelectItem>
@@ -334,8 +351,8 @@ export default function AdminContactsPage() {
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[submission.status]}`}>
                         {submission.status}
                       </span>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${departmentColors[submission.department]}`}>
-                        {departmentLabels[submission.department] || submission.department}
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${purposeColors[submission.purpose]}`}>
+                        {purposeLabels[submission.purpose] || submission.purpose}
                       </span>
                     </div>
                     <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{submission.email}</p>
@@ -354,8 +371,8 @@ export default function AdminContactsPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-                      onClick={() => handleDelete(submission._id)}
+                      className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-950/30"
+                      onClick={() => handleDeleteClick(submission)}
                       title="Delete"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -390,6 +407,27 @@ export default function AdminContactsPage() {
           }}
         />
       )}
+
+      {/* Delete Confirmation Modal */}
+      <AlertDialog open={deleteConfirm.open} onOpenChange={(open) => !open && setDeleteConfirm({ open: false, id: null, name: "" })}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Submission</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete the submission from <span className="font-semibold text-foreground">{deleteConfirm.name}</span>? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

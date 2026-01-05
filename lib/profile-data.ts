@@ -13,7 +13,7 @@ export const defaultProfile: SiteProfile = {
   title: "Academic English Tutor & Lecturer",
   
   // Contact
-  email: "ngoziblessingumoru@gmail.com",
+  email: "hello@ngoziumoru.info",
   phone: undefined,
   location: "United Kingdom",
   

@@ -21,7 +21,8 @@ import {
   Loader2,
   FolderOpen,
   Plus,
-  Calendar
+  Calendar,
+  Bell
 } from "lucide-react"
 import { AdminDashboardHeader } from "@/components/dashboard/admin-dashboard-header"
 import { formatDistanceToNow } from "date-fns"
@@ -35,11 +36,12 @@ interface Stats {
   draftPosts: number
   totalViews: number
   totalComments: number
+  unreadNotifications: number
 }
 
 interface RecentActivity {
   id: string
-  type: "contact" | "blog" | "resource" | "comment"
+  type: "contact" | "blog" | "resource" | "comment" | "notification"
   title: string
   description: string
   timestamp: string
@@ -64,6 +66,15 @@ interface RecentContact {
   createdAt: string
 }
 
+interface RecentNotification {
+  id: string
+  type: string
+  title: string
+  message: string
+  read: boolean
+  createdAt: string
+}
+
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<Stats>({
     totalResources: 0,
@@ -74,63 +85,31 @@ export default function AdminDashboardPage() {
     draftPosts: 0,
     totalViews: 0,
     totalComments: 0,
+    unreadNotifications: 0,
   })
   const [recentPosts, setRecentPosts] = useState<RecentBlogPost[]>([])
   const [recentContacts, setRecentContacts] = useState<RecentContact[]>([])
+  const [recentNotifications, setRecentNotifications] = useState<RecentNotification[]>([])
+  const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       setIsLoading(true)
       try {
-        // Fetch blog stats
-        const blogRes = await fetch("/api/admin/blog")
-        const blogData = await blogRes.json()
-        const blogPosts = blogData.posts || []
+        // Fetch all dashboard data in a single API call
+        const response = await fetch("/api/admin/dashboard")
+        const data = await response.json()
         
-        // Fetch contacts
-        const contactRes = await fetch("/api/contact")
-        const contactData = await contactRes.json()
-        const contacts = contactData.contacts || []
-        
-        // Fetch resources
-        const resourceRes = await fetch("/api/admin/resources")
-        const resourceData = await resourceRes.json()
-        const resources = resourceData.resources || []
-
-        // Calculate stats
-        const publishedPosts = blogPosts.filter((p: { status: string }) => p.status === "published")
-        const draftPosts = blogPosts.filter((p: { status: string }) => p.status === "draft")
-        const totalViews = blogPosts.reduce((sum: number, p: { views?: number }) => sum + (p.views || 0), 0)
-        const totalComments = blogPosts.reduce((sum: number, p: { commentsCount?: number }) => sum + (p.commentsCount || 0), 0)
-        const unreadContacts = contacts.filter((c: { status: string }) => c.status === "new" || c.status === "unread").length
-
-        setStats({
-          totalResources: resources.length,
-          totalContacts: contacts.length,
-          unreadContacts,
-          totalBlogPosts: blogPosts.length,
-          publishedPosts: publishedPosts.length,
-          draftPosts: draftPosts.length,
-          totalViews,
-          totalComments,
-        })
-
-        // Get recent posts (last 5)
-        const sortedPosts = blogPosts
-          .sort((a: { createdAt: string }, b: { createdAt: string }) => 
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          )
-          .slice(0, 5)
-        setRecentPosts(sortedPosts)
-
-        // Get recent contacts (last 5)
-        const sortedContacts = contacts
-          .sort((a: { createdAt: string }, b: { createdAt: string }) => 
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          )
-          .slice(0, 5)
-        setRecentContacts(sortedContacts)
+        if (response.ok) {
+          setStats(data.stats)
+          setRecentPosts(data.recentPosts || [])
+          setRecentContacts(data.recentContacts || [])
+          setRecentNotifications(data.recentNotifications || [])
+          setRecentActivity(data.recentActivity || [])
+        } else {
+          console.error("Error fetching dashboard data:", data.error)
+        }
       } catch (error) {
         console.error("Error fetching dashboard data:", error)
       } finally {

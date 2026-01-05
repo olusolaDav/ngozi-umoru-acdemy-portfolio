@@ -9,15 +9,25 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Mail, Phone, ExternalLink, Send } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
+
+// Purpose options matching admin contacts page
+const PURPOSE_OPTIONS = [
+  { value: "general", label: "General Inquiry" },
+  { value: "collaboration", label: "Collaboration Opportunity" },
+  { value: "research", label: "Research Query" },
+  { value: "teaching", label: "Teaching Inquiry" },
+  { value: "speaking", label: "Speaking Engagement" },
+]
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
-    subject: "",
+    purpose: "",
     message: "",
     agreePolicy: false,
   })
@@ -25,6 +35,12 @@ export default function ContactPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!formData.purpose) {
+      toast.error("Please select a purpose")
+      return
+    }
+    
     setIsSubmitting(true)
 
     try {
@@ -36,7 +52,7 @@ export default function ContactPage() {
         body: JSON.stringify({
           fullName: formData.fullName,
           email: formData.email,
-          department: "general", // Changed from subject to department
+          purpose: formData.purpose,
           message: formData.message,
           agreePolicy: formData.agreePolicy,
         }),
@@ -48,7 +64,7 @@ export default function ContactPage() {
         toast.error(data.error || "Failed to submit form. Please try again.")
       } else {
         toast.success("Thank you for your message! I will get back to you soon.")
-        setFormData({ fullName: "", email: "", subject: "", message: "", agreePolicy: false })
+        setFormData({ fullName: "", email: "", purpose: "", message: "", agreePolicy: false })
       }
     } catch (err) {
       toast.error("An error occurred. Please try again.")
@@ -96,10 +112,10 @@ export default function ContactPage() {
                     <div className="flex-1">
                       <h3 className="font-semibold text-lg mb-2">Email</h3>
                       <a
-                        href="mailto:ngoziblessingumoru@gmail.com"
+                        href="mailto:hello@ngoziumoru.info"
                         className="text-muted-foreground hover:text-primary transition-colors break-all"
                       >
-                        ngoziblessingumoru@gmail.com
+                        hello@ngoziumoru.info
                       </a>
                       <br />
                       <a
@@ -201,15 +217,22 @@ export default function ContactPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="subject">Subject *</Label>
-                      <Input
-                        id="subject"
-                        name="subject"
-                        placeholder="What is this regarding?"
-                        required
-                        value={formData.subject}
-                        onChange={handleChange}
-                      />
+                      <Label htmlFor="purpose">Purpose *</Label>
+                      <Select 
+                        value={formData.purpose} 
+                        onValueChange={(value) => setFormData(prev => ({ ...prev, purpose: value }))}
+                      >
+                        <SelectTrigger id="purpose">
+                          <SelectValue placeholder="Select a purpose" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {PURPOSE_OPTIONS.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div className="space-y-2">

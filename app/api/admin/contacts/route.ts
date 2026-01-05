@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "12")
     const search = searchParams.get("search") || ""
     const status = searchParams.get("status") || "all"
-    const department = searchParams.get("department") || "all"
+    const purpose = searchParams.get("purpose") || "all"
     const sort = searchParams.get("sort") || "newest"
 
     const db = await getDb()
@@ -55,8 +55,8 @@ export async function GET(request: NextRequest) {
       query.status = status
     }
 
-    if (department !== "all") {
-      query.department = department
+    if (purpose !== "all") {
+      query.purpose = purpose
     }
 
     // Sort options

@@ -13,11 +13,38 @@ import {
   Youtube, 
   CircleUser,
   GraduationCap,
-  ExternalLink 
+  ExternalLink,
+  Globe,
+  BookOpen,
+  Music,
+  MessageCircle,
+  Send,
+  Pin,
+  AtSign,
+  Link2
 } from "lucide-react"
 import type { FooterContent, SocialLink } from "@/lib/site-types"
 
-// Icon mapping for social platforms
+// Icon mapping for social platforms - maps platform name to Lucide icon
+const platformIcons: Record<string, React.ElementType> = {
+  linkedin: Linkedin,
+  facebook: Facebook, 
+  twitter: Twitter,
+  instagram: Instagram,
+  github: Github,
+  youtube: Youtube,
+  tiktok: Music,
+  researchgate: BookOpen,
+  googlescholar: GraduationCap,
+  orcid: CircleUser,
+  whatsapp: MessageCircle,
+  telegram: Send,
+  pinterest: Pin,
+  threads: AtSign,
+  other: Link2,
+}
+
+// Legacy icon mapping for backwards compatibility
 const socialIcons = {
   Mail,
   FileText,
@@ -29,11 +56,20 @@ const socialIcons = {
   Youtube,
   CircleUser,
   GraduationCap,
-  ExternalLink
+  ExternalLink,
+  Globe,
+  BookOpen,
+  Music,
+  MessageCircle,
+  Send,
+  Pin,
+  AtSign,
+  Link2
 } as const
 
 export function Footer() {
   const [footerData, setFooterData] = useState<FooterContent | null>(null)
+  const [socialLinks, setSocialLinks] = useState<SocialLink[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -43,6 +79,10 @@ export function Footer() {
         const data = await res.json()
         if (data.ok && data.content?.footer) {
           setFooterData(data.content.footer)
+        }
+        // Get social links from profile section
+        if (data.ok && data.content?.profile?.socialLinks) {
+          setSocialLinks(data.content.profile.socialLinks)
         }
       } catch (error) {
         console.error("Failed to fetch footer data:", error)
@@ -54,9 +94,19 @@ export function Footer() {
     fetchFooterData()
   }, [])
 
-  const getSocialIcon = (iconName: string) => {
-    const IconComponent = socialIcons[iconName as keyof typeof socialIcons] || ExternalLink
-    return <IconComponent className="h-4 w-4" />
+  // Get the correct icon for a social platform
+  const getSocialIcon = (platform: string, iconName?: string) => {
+    // First try to get by platform name
+    const PlatformIcon = platformIcons[platform.toLowerCase()]
+    if (PlatformIcon) return <PlatformIcon className="h-4 w-4" />
+    
+    // Fallback to icon name if provided
+    if (iconName) {
+      const IconComponent = socialIcons[iconName as keyof typeof socialIcons]
+      if (IconComponent) return <IconComponent className="h-4 w-4" />
+    }
+    
+    return <ExternalLink className="h-4 w-4" />
   }
 
   // Fallback data if loading or API fails
@@ -93,7 +143,7 @@ export function Footer() {
     },
     socialLinks: [],
     contact: {
-      email: "ngoziblessingumoru@gmail.com"
+      email: "hello@ngoziumoru.info"
     },
     copyright: {
       text: "Dr. Ngozi Blessing Umoru. All rights reserved.",
@@ -165,8 +215,24 @@ export function Footer() {
                 {data.contact.email}
               </a>
 
-              {/* Social Links */}
-              {data.socialLinks
+              {/* Social Links from Profile - only show enabled ones */}
+              {socialLinks
+                .filter(link => link.enabled && link.url)
+                .map((link, index) => (
+                <a
+                  key={link.id || index}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  {getSocialIcon(link.platform, link.icon)}
+                  {link.label}
+                </a>
+              ))}
+
+              {/* Fallback: show footer socialLinks if profile socialLinks are empty */}
+              {socialLinks.length === 0 && data.socialLinks
                 .filter(link => link.enabled && link.url)
                 .map((link, index) => (
                 <a
@@ -176,7 +242,7 @@ export function Footer() {
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  {getSocialIcon(link.icon)}
+                  {getSocialIcon(link.platform, link.icon)}
                   {link.label}
                 </a>
               ))}
@@ -184,8 +250,24 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 pt-8 border-t border-border text-center text-sm text-muted-foreground">
-          © {data.copyright.year} {data.copyright.text}
+        {/* Copyright & Agency Credit */}
+        <div className="mt-8 pt-8 border-t border-border">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
+            <div>
+              © {data.copyright.year} {data.copyright.text}
+            </div>
+            <div className="flex items-center gap-1">
+              <span>Powered by</span>
+              <a 
+                href="https://agency.alotacademy.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary hover:underline font-medium"
+              >
+                Alot Digital Agency
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </footer>
