@@ -3,31 +3,22 @@ import { verifySession } from "@/lib/auth"
 import { getDb } from "@/lib/mongodb"
 import { ObjectId } from "mongodb"
 
-// --------------------
-// Helpers
-// --------------------
 function parseCookies(cookieHeader: string | null) {
   if (!cookieHeader) return {}
   return Object.fromEntries(
     cookieHeader
       .split(";")
-      .map(c => c.trim().split("="))
+      .map((c) => c.trim().split("="))
       .map(([k, v]) => [k, decodeURIComponent(v)])
   )
 }
 
-// --------------------
-// POST – Create Resource
-// --------------------
 export async function POST(req: Request) {
   try {
-    // --------------------
-    // Auth
-    // --------------------
     const cookieHeader = req.headers.get("cookie")
     const cookies = parseCookies(cookieHeader)
     const session = cookies.session
-
+    
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
@@ -37,113 +28,87 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Admin access required" }, { status: 403 })
     }
 
-    // --------------------
-    // Form Data
-    // --------------------
     const formData = await req.formData()
-
     const file = formData.get("file") as File
     const title = formData.get("title") as string
-    const description = (formData.get("description") as string) || ""
+    const description = formData.get("description") as string
     const category = formData.get("category") as string
-    const targetAudience = (formData.get("targetAudience") as string) || "all"
-
+    const targetAudience = formData.get("targetAudience") as string || "all"
+    
     if (!file || !title || !category) {
-      return NextResponse.json(
-        { error: "Missing required fields: file, title, category" },
-        { status: 400 }
-      )
+      return NextResponse.json({ 
+        error: "Missing required fields: file, title, and category" 
+      }, { status: 400 })
     }
 
-    // --------------------
-    // Upload via /api/upload/file (DRY)
-    // --------------------
+    // Upload file to Cloudinary via the unified upload API
     const uploadFormData = new FormData()
     uploadFormData.append("file", file)
     uploadFormData.append("folder", "resources")
+    // Don't set public_id - let Cloudinary use the original filename with extension
+    // This is critical for raw files (documents) to be downloadable
 
-    const uploadResponse = await fetch(
-      `${process.env.APP_URL || "https://ngoziumoru.info"}/api/upload/file`,
-      {
-        method: "POST",
-        body: uploadFormData,
-        headers: {
-          cookie: cookieHeader || "",
-        },
+    const uploadResponse = await fetch(`${process.env.APP_URL || "http://localhost:3000"}/api/upload/file`, {
+      method: "POST",
+      body: uploadFormData,
+      headers: {
+        cookie: cookieHeader || ""
       }
-    )
+    })
 
     if (!uploadResponse.ok) {
-      const err = await uploadResponse.json().catch(() => ({}))
-      throw new Error(err.error || "File upload failed")
+      const uploadError = await uploadResponse.json().catch(() => ({ error: "Upload failed" }))
+      console.error("[ADMIN_RESOURCE_UPLOAD] Upload error:", uploadError)
+      throw new Error(uploadError.error || "Failed to upload file")
     }
 
     const uploadData = await uploadResponse.json()
-
-    if (!uploadData?.data?.url) {
-      throw new Error("Invalid upload response from upload service")
+    
+    if (!uploadData.data?.url) {
+      throw new Error("Invalid upload response - missing file URL")
     }
+    
+    const fileUrl = uploadData.data.url
+    const filePublicId = uploadData.data.publicId
 
-    // --------------------
-    // IMPORTANT: URL SELECTION LOGIC
-    // --------------------
-    const {
-      url,
-      downloadUrl,
-      publicId,
-      resourceType,
-      bytes,
-      format,
-      thumbnail,
-    } = uploadData.data
-
-    /**
-     * RULE:
-     * - raw (pdf/doc/xls): use downloadUrl
-     * - image/video/audio: use url
-     */
-    const primaryUrl =
-      resourceType === "raw" && downloadUrl ? downloadUrl : url
-
-    // --------------------
-    // Save to DB
-    // --------------------
+    // Save resource metadata to database
     const db = await getDb()
     const resourcesCollection = db.collection("resources")
 
     const resource = {
       title,
-      description,
+      description: description || "",
       category,
       targetAudience,
       file: {
-        url: primaryUrl,        // UI should always use this
-        viewUrl: url || null,   // optional preview
-        downloadUrl: downloadUrl || null,
-        publicId,
+        url: fileUrl,
+        publicId: filePublicId,
         originalName: file.name,
-        size: bytes,
-        format,
-        resourceType,
-        thumbnail: thumbnail || null,
+        size: uploadData.data.bytes,
+        format: uploadData.data.format,
+        resourceType: uploadData.data.resourceType,
+        thumbnail: uploadData.data.thumbnail || null
       },
       uploadedBy: (payload as any).userId,
       uploadedAt: new Date(),
       downloads: 0,
-      isActive: true,
+      isActive: true
     }
 
     const result = await resourcesCollection.insertOne(resource)
+
+    console.log(`[ADMIN_RESOURCE_UPLOAD] Resource uploaded: ${title}`)
 
     return NextResponse.json({
       success: true,
       resource: {
         _id: result.insertedId.toString(),
-        ...resource,
-      },
+        ...resource
+      }
     })
+
   } catch (error: any) {
-    console.error("[ADMIN_RESOURCE_UPLOAD]", error)
+    console.error("[ADMIN_RESOURCE_UPLOAD] Error:", error.message)
     return NextResponse.json(
       { error: error.message || "Internal server error" },
       { status: 500 }
@@ -151,15 +116,12 @@ export async function POST(req: Request) {
   }
 }
 
-// --------------------
-// GET – List Resources
-// --------------------
 export async function GET(req: Request) {
   try {
     const cookieHeader = req.headers.get("cookie")
     const cookies = parseCookies(cookieHeader)
     const session = cookies.session
-
+    
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
@@ -169,7 +131,8 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Admin access required" }, { status: 403 })
     }
 
-    const { searchParams } = new URL(req.url)
+    const { url } = req
+    const { searchParams } = new URL(url)
     const search = searchParams.get("search") || ""
     const category = searchParams.get("category") || "all"
     const page = parseInt(searchParams.get("page") || "1")
@@ -178,13 +141,14 @@ export async function GET(req: Request) {
     const db = await getDb()
     const resourcesCollection = db.collection("resources")
 
+    // Build query
     let query: any = { isActive: true }
 
     if (search) {
       query.$or = [
         { title: { $regex: search, $options: "i" } },
         { description: { $regex: search, $options: "i" } },
-        { category: { $regex: search, $options: "i" } },
+        { category: { $regex: search, $options: "i" } }
       ]
     }
 
@@ -192,8 +156,10 @@ export async function GET(req: Request) {
       query.category = category
     }
 
+    // Calculate skip for pagination
     const skip = (page - 1) * limit
 
+    // Get resources with pagination
     const resources = await resourcesCollection
       .find(query)
       .sort({ uploadedAt: -1 })
@@ -201,22 +167,35 @@ export async function GET(req: Request) {
       .limit(limit)
       .toArray()
 
+    // Get total count
     const total = await resourcesCollection.countDocuments(query)
 
+    // Transform data
+    const transformedResources = resources.map(resource => ({
+      _id: resource._id.toString(),
+      title: resource.title,
+      description: resource.description,
+      category: resource.category,
+      targetAudience: resource.targetAudience,
+      file: resource.file,
+      uploadedBy: resource.uploadedBy,
+      uploadedAt: resource.uploadedAt,
+      downloads: resource.downloads,
+      isActive: resource.isActive
+    }))
+
     return NextResponse.json({
-      resources: resources.map(r => ({
-        ...r,
-        _id: r._id.toString(),
-      })),
+      resources: transformedResources,
       pagination: {
         page,
         limit,
         total,
-        pages: Math.ceil(total / limit),
-      },
+        pages: Math.ceil(total / limit)
+      }
     })
-  } catch (error) {
-    console.error("[ADMIN_RESOURCES_GET]", error)
+
+  } catch (error: any) {
+    console.error("[ADMIN_RESOURCES_LIST] Error:", error.message)
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -224,15 +203,13 @@ export async function GET(req: Request) {
   }
 }
 
-// --------------------
-// DELETE – Soft Delete
-// --------------------
+// DELETE - Delete one or more resources
 export async function DELETE(req: Request) {
   try {
     const cookieHeader = req.headers.get("cookie")
     const cookies = parseCookies(cookieHeader)
     const session = cookies.session
-
+    
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
@@ -242,28 +219,34 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "Admin access required" }, { status: 403 })
     }
 
-    const { ids } = await req.json()
+    const body = await req.json()
+    const { ids } = body
 
-    if (!Array.isArray(ids) || ids.length === 0) {
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
       return NextResponse.json({ error: "No resource IDs provided" }, { status: 400 })
     }
 
     const db = await getDb()
     const resourcesCollection = db.collection("resources")
 
-    const objectIds = ids.map(id => new ObjectId(id))
+    // Convert string IDs to ObjectIds
+    const objectIds = ids.map((id: string) => new ObjectId(id))
 
+    // Delete resources (soft delete by setting isActive to false)
     const result = await resourcesCollection.updateMany(
       { _id: { $in: objectIds } },
       { $set: { isActive: false, deletedAt: new Date() } }
     )
 
+    console.log(`[ADMIN_RESOURCES_DELETE] Deleted ${result.modifiedCount} resources`)
+
     return NextResponse.json({
       success: true,
-      deletedCount: result.modifiedCount,
+      deletedCount: result.modifiedCount
     })
-  } catch (error) {
-    console.error("[ADMIN_RESOURCES_DELETE]", error)
+
+  } catch (error: any) {
+    console.error("[ADMIN_RESOURCES_DELETE] Error:", error.message)
     return NextResponse.json(
       { error: "Failed to delete resources" },
       { status: 500 }
