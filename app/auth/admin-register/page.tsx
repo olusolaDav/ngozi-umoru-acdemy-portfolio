@@ -1,3 +1,5 @@
+//app/auth/admin-register/page.tsx
+
 import { AdminRegisterForm } from "@/components/auth/admin-register-form"
 
 export const metadata = {

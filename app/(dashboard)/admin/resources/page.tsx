@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { 
-  Upload, Search, Plus, Loader2, ExternalLink, CheckSquare, Trash2, LayoutGrid, List, X
+  Upload, Search, Plus, Loader2, ExternalLink, CheckSquare, Trash2, LayoutGrid, List, X, Download
 } from "lucide-react"
 import {
   Dialog,
@@ -26,10 +26,26 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { ResourceCard } from "@/components/dashboard/resources/resource-card"
 import { AdminDashboardHeader } from "@/components/dashboard/admin-dashboard-header"
 import { toast } from "sonner"
 import { formatFileSize } from "@/lib/file-icons"
+
+// Resource categories for academic portfolio
+const RESOURCE_CATEGORIES = [
+  { value: "worksheets", label: "Worksheets" },
+  { value: "curriculum", label: "Curriculum" },
+  { value: "lesson-slides", label: "Lesson Slides" },
+] as const
+
+type ResourceCategory = typeof RESOURCE_CATEGORIES[number]["value"]
 
 interface Resource {
   _id: string
@@ -76,11 +92,13 @@ export default function AdminResourcesPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [selectMode, setSelectMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [activeCategory, setActiveCategory] = useState<"all" | ResourceCategory>("all")
   
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false)
   const [uploadingFile, setUploadingFile] = useState<UploadingFile | null>(null)
   const [fileName, setFileName] = useState("")
   const [description, setDescription] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState<ResourceCategory>("worksheets")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -110,11 +128,27 @@ export default function AdminResourcesPage() {
 
   // Filter resources
   const filteredResources = useMemo(() => {
-    return resources.filter(resource =>
+    let result = resources.filter(resource =>
       resource.title.toLowerCase().includes(search.toLowerCase()) ||
       resource.description.toLowerCase().includes(search.toLowerCase())
     )
-  }, [resources, search])
+    
+    // Filter by category
+    if (activeCategory !== "all") {
+      result = result.filter(resource => resource.category === activeCategory)
+    }
+    
+    return result
+  }, [resources, search, activeCategory])
+
+  // Get counts per category
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: resources.length }
+    RESOURCE_CATEGORIES.forEach(cat => {
+      counts[cat.value] = resources.filter(r => r.category === cat.value).length
+    })
+    return counts
+  }, [resources])
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -239,6 +273,7 @@ export default function AdminResourcesPage() {
     setUploadingFile(null)
     setFileName("")
     setDescription("")
+    setSelectedCategory("worksheets")
   }
 
   const handleSubmit = async () => {
@@ -254,7 +289,7 @@ export default function AdminResourcesPage() {
       formData.append('file', uploadingFile.file)
       formData.append('title', fileName)
       formData.append('description', description)
-      formData.append('category', 'document')
+      formData.append('category', selectedCategory)
       formData.append('targetAudience', 'all')
       
       const response = await fetch('/api/admin/resources', {
@@ -389,6 +424,25 @@ export default function AdminResourcesPage() {
                     disabled={isSubmitting}
                     className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
                   />
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
+                    <Select
+                      value={selectedCategory}
+                      onValueChange={(value) => setSelectedCategory(value as ResourceCategory)}
+                      disabled={isSubmitting}
+                    >
+                      <SelectTrigger className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {RESOURCE_CATEGORIES.map((category) => (
+                          <SelectItem key={category.value} value={category.value}>
+                            {category.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 {/* Actions */}
@@ -423,6 +477,35 @@ export default function AdminResourcesPage() {
 
       {/* Main Content */}
       <div className="px-6 py-8">
+        {/* Category Tabs */}
+        <div className="mb-6">
+          <div className="flex flex-wrap gap-2 border-b border-gray-200 dark:border-gray-700 pb-4">
+            <button
+              onClick={() => setActiveCategory("all")}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                activeCategory === "all"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+              }`}
+            >
+              All Resources ({categoryCounts.all})
+            </button>
+            {RESOURCE_CATEGORIES.map((category) => (
+              <button
+                key={category.value}
+                onClick={() => setActiveCategory(category.value)}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                  activeCategory === category.value
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                }`}
+              >
+                {category.label} ({categoryCounts[category.value] || 0})
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Search and Controls */}
         <div className="mb-6 space-y-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -527,6 +610,7 @@ export default function AdminResourcesPage() {
                     id={resource._id}
                     title={resource.title}
                     description={resource.description}
+                    category={resource.category}
                     file={resource.file}
                     isSelected={selectedIds.includes(resource._id)}
                     selectMode={selectMode}
@@ -547,6 +631,7 @@ export default function AdminResourcesPage() {
                     id={resource._id}
                     title={resource.title}
                     description={resource.description}
+                    category={resource.category}
                     file={resource.file}
                     isSelected={selectedIds.includes(resource._id)}
                     selectMode={selectMode}

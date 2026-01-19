@@ -1,3 +1,4 @@
+//components/ui/rich-text-editor.tsx
 "use client"
 
 import { forwardRef, useRef, useEffect } from "react"

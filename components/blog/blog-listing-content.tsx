@@ -35,22 +35,22 @@ interface BlogPost {
 }
 
 const categories = [
-  { name: "Law", count: 0 },
-  { name: "Health", count: 0 },
-  { name: "Education", count: 0 },
-  { name: "Technology", count: 0 },
-  { name: "Finance", count: 0 },
-  { name: "Oil and Gas", count: 0 },
-  { name: "Healthcare", count: 0 },
-  { name: "Telecommunications", count: 0 },
-  { name: "Retail", count: 0 },
-  { name: "Manufacturing", count: 0 },
-  { name: "Automotive", count: 0 },
-  { name: "Pharmaceuticals", count: 0 },
-  { name: "Other", count: 0 },
+  { name: "Academic Writing", count: 0 },
+  { name: "Teaching & Pedagogy", count: 0 },
+  { name: "EAP/ESL", count: 0 },
+  { name: "Higher Education", count: 0 },
+  { name: "Research & Methodology", count: 0 },
+  { name: "Curriculum Development", count: 0 },
+  { name: "Student Support", count: 0 },
+  { name: "Professional Development", count: 0 },
+  { name: "Educational Technology", count: 0 },
+  { name: "Assessment & Feedback", count: 0 },
+  { name: "Inclusive Education", count: 0 },
+  { name: "Academic Skills", count: 0 },
+  { name: "Reflections", count: 0 },
 ]
 
-const tags = ["Law", "Health", "Education", "Technology", "Finance", "Oil and Gas", "Healthcare", "Telecommunications", "Retail", "Manufacturing", "Automotive", "Pharmaceuticals", "Other"]
+const tags = ["Academic Writing", "Teaching & Pedagogy", "EAP/ESL", "Higher Education", "Research & Methodology", "Curriculum Development", "Student Support", "Professional Development", "Educational Technology", "Assessment & Feedback", "Inclusive Education", "Academic Skills", "Reflections"]
 
 function formatBlogDate(dateString: string): string {
   const date = new Date(dateString)

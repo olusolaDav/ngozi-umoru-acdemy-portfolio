@@ -1,9 +1,12 @@
 import { Card, CardContent } from "@/components/ui/card"
+import { parseDateForSort } from "@/components/ui/month-year-picker"
 
 interface ExperienceItem {
   position: string
   institution: string
   period: string
+  startDate?: string
+  endDate?: string
   responsibilities: string[]
 }
 
@@ -15,6 +18,23 @@ interface ExperienceProps {
 
 export function ExperienceSection(props: ExperienceProps) {
   const { section, title, items = [] } = props
+
+  // Sort items by end date (most recent first), then by start date
+  const sortedItems = [...items].sort((a, b) => {
+    // Parse end dates - "present" should be treated as most recent
+    const endDateA = parseDateForSort(a.endDate || a.startDate)
+    const endDateB = parseDateForSort(b.endDate || b.startDate)
+    
+    // Sort descending (most recent first)
+    if (endDateB !== endDateA) {
+      return endDateB - endDateA
+    }
+    
+    // If end dates are equal, sort by start date (more recent start first)
+    const startDateA = parseDateForSort(a.startDate)
+    const startDateB = parseDateForSort(b.startDate)
+    return startDateB - startDateA
+  })
   return (
     <section id="experience" className="py-20 px-4">
       <div className="container mx-auto max-w-6xl">
@@ -26,7 +46,7 @@ export function ExperienceSection(props: ExperienceProps) {
         </div>
 
         <div className="space-y-8">
-          {items.map((item, index) => (
+          {sortedItems.map((item, index) => (
             <Card key={index}>
               <CardContent className="pt-6">
                 <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-2 mb-4">

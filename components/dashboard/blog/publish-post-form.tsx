@@ -1,12 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useMemo } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { X, ImageIcon } from "lucide-react"
+import { X, ImageIcon, AlertCircle } from "lucide-react"
 import { SectorDropdown } from "./sector-dropdown"
 import type { BlogPost } from "@/lib/blog-data"
 
@@ -22,23 +22,133 @@ interface PublishData {
   tags: string[]
 }
 
+// Decode HTML entities
+function decodeHtmlEntities(text: string): string {
+  const entities: Record<string, string> = {
+    '&nbsp;': ' ',
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&quot;': '"',
+    '&#39;': "'",
+    '&apos;': "'",
+    '&mdash;': '\u2014',
+    '&ndash;': '\u2013',
+    '&hellip;': '\u2026',
+    '&rsquo;': '\u2019',
+    '&lsquo;': '\u2018',
+    '&rdquo;': '\u201D',
+    '&ldquo;': '\u201C',
+  }
+  
+  let decoded = text
+  Object.entries(entities).forEach(([entity, char]) => {
+    decoded = decoded.replace(new RegExp(entity, 'gi'), char)
+  })
+  
+  // Handle numeric entities like &#160;
+  decoded = decoded.replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)))
+  
+  // Clean up multiple spaces
+  decoded = decoded.replace(/\s+/g, ' ').trim()
+  
+  return decoded
+}
+
+// Extract first paragraph text from HTML content
+function extractFirstParagraph(htmlContent: string): string {
+  if (!htmlContent) return ""
+  
+  // Remove images and other non-text elements first
+  const cleanedContent = htmlContent
+    .replace(/<img[^>]*>/gi, "")
+    .replace(/<video[^>]*>.*?<\/video>/gi, "")
+    .replace(/<iframe[^>]*>.*?<\/iframe>/gi, "")
+  
+  // Try to find the first paragraph
+  const paragraphMatch = cleanedContent.match(/<p[^>]*>(.*?)<\/p>/i)
+  if (paragraphMatch) {
+    // Remove HTML tags from paragraph content and decode entities
+    const text = decodeHtmlEntities(paragraphMatch[1].replace(/<[^>]+>/g, "")).trim()
+    if (text) return text
+  }
+  
+  // Fallback: strip all HTML and get first meaningful text
+  const plainText = decodeHtmlEntities(cleanedContent.replace(/<[^>]+>/g, "")).trim()
+  // Get first 160 characters
+  return plainText.substring(0, 160)
+}
+
+// Extract first image from HTML content
+function extractFirstImage(content: string): string | null {
+  if (!content) return null
+  const imgMatch = content.match(/<img[^>]+src="([^"]+)"/)
+  return imgMatch ? imgMatch[1] : null
+}
+
 export function PublishPostForm({ post, onPublishNow, onClose }: PublishPostFormProps) {
   const router = useRouter()
-  const [title, setTitle] = useState(post?.title || "")
-  const [metaDescription, setMetaDescription] = useState(post?.excerpt || "")
-  const [selectedSectors, setSelectedSectors] = useState<string[]>(post?.tags || [])
   const maxDescriptionLength = 160
 
-  // Extract first image from content for thumbnail
-  const getFirstImage = (content: string): string | null => {
-    const imgMatch = content?.match(/<img[^>]+src="([^"]+)"/)
-    return imgMatch ? imgMatch[1] : null
-  }
+  // Extract auto-values from content
+  const autoMetaDescription = useMemo(() => {
+    return post?.content ? extractFirstParagraph(post.content) : ""
+  }, [post?.content])
 
-  // Get thumbnail - prioritize post.thumbnail, then extract from content
-  const thumbnailUrl = post?.thumbnail || (post?.content ? getFirstImage(post.content) : null) || null
+  const thumbnailUrl = useMemo(() => {
+    return post?.thumbnail || (post?.content ? extractFirstImage(post.content) : null) || null
+  }, [post?.thumbnail, post?.content])
+
+  // Form state - initialize meta description from excerpt or auto-extracted first paragraph
+  const [title, setTitle] = useState(post?.title || "")
+  const [metaDescription, setMetaDescription] = useState(() => {
+    if (post?.excerpt) return post.excerpt
+    return autoMetaDescription.substring(0, maxDescriptionLength)
+  })
+  const [selectedSectors, setSelectedSectors] = useState<string[]>(post?.tags || [])
+
+  // Auto-fill meta description when content changes and field is empty
+  useEffect(() => {
+    if (!metaDescription && autoMetaDescription) {
+      setMetaDescription(autoMetaDescription.substring(0, maxDescriptionLength))
+    }
+  }, [autoMetaDescription])
+
+  // Check if content has any text (not just HTML tags/empty paragraphs)
+  const hasContent = useMemo(() => {
+    if (!post?.content) return false
+    const textContent = post.content.replace(/<[^>]+>/g, "").trim()
+    return textContent.length > 0
+  }, [post?.content])
+
+  // Validation errors
+  const validationErrors = useMemo(() => {
+    const errors: string[] = []
+    
+    if (!title.trim()) {
+      errors.push("Title is required")
+    }
+    
+    if (!metaDescription.trim()) {
+      errors.push("Meta description is required")
+    }
+    
+    if (!thumbnailUrl) {
+      errors.push("Include at least one image in your content for the thumbnail")
+    }
+    
+    if (!hasContent) {
+      errors.push("Blog content cannot be empty")
+    }
+    
+    return errors
+  }, [title, metaDescription, thumbnailUrl, hasContent])
+
+  const canPublish = validationErrors.length === 0
 
   const handlePublishNow = () => {
+    if (!canPublish) return
+    
     onPublishNow?.({
       title,
       metaDescription,
@@ -142,12 +252,31 @@ export function PublishPostForm({ post, onPublishNow, onClose }: PublishPostForm
               </p>
             </div>
 
+            {/* Validation Errors */}
+            {validationErrors.length > 0 && (
+              <div className="rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 p-4">
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-red-800 dark:text-red-300 mb-1">
+                      Please fix the following before publishing:
+                    </p>
+                    <ul className="text-sm text-red-700 dark:text-red-400 list-disc list-inside space-y-1">
+                      {validationErrors.map((error, index) => (
+                        <li key={index}>{error}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Action Buttons */}
             <div className="flex flex-col gap-3 pt-4">
               <Button
                 onClick={handlePublishNow}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                disabled={!title.trim()}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!canPublish}
               >
                 Publish Now
               </Button>

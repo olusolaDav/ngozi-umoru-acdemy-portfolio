@@ -35,6 +35,7 @@ import {
 import { toast } from "sonner"
 import type { SiteProfile, FooterContent, SiteMetadata, SocialLink } from "@/lib/site-types"
 import { SOCIAL_PLATFORMS } from "@/lib/site-types"
+import { MonthYearPicker, formatPeriod } from "@/components/ui/month-year-picker"
 
 interface HeroContent {
   badge: string
@@ -61,6 +62,8 @@ interface ExperienceItem {
   position: string
   institution: string
   period: string
+  startDate?: string
+  endDate?: string
   responsibilities: string[]
 }
 
@@ -351,14 +354,24 @@ export default function AdminSitePage() {
   const addExperience = () => {
     setExperience({
       ...experience,
-      items: [...experience.items, { position: "", institution: "", period: "", responsibilities: [""] }],
+      items: [...experience.items, { position: "", institution: "", period: "", startDate: "", endDate: "", responsibilities: [""] }],
     })
   }
 
   const updateExperience = (index: number, field: keyof ExperienceItem, value: any) => {
-    const newItems = [...experience.items]
-    newItems[index] = { ...newItems[index], [field]: value }
-    setExperience({ ...experience, items: newItems })
+    setExperience(prev => {
+      const newItems = [...prev.items]
+      newItems[index] = { ...newItems[index], [field]: value }
+      return { ...prev, items: newItems }
+    })
+  }
+
+  const updateExperienceMultiple = (index: number, updates: Partial<ExperienceItem>) => {
+    setExperience(prev => {
+      const newItems = [...prev.items]
+      newItems[index] = { ...newItems[index], ...updates }
+      return { ...prev, items: newItems }
+    })
   }
 
   const removeExperience = (index: number) => {
@@ -756,14 +769,31 @@ export default function AdminSitePage() {
                           />
                         </div>
                         <div className="space-y-1">
-                          <Label className="text-xs">Period</Label>
-                          <Input
-                            value={item.period}
-                            onChange={(e) => updateExperience(index, "period", e.target.value)}
-                            placeholder="Jan 2020 - Present"
+                          <Label className="text-xs">Start Date</Label>
+                          <MonthYearPicker
+                            value={item.startDate || ""}
+                            onChange={(value) => {
+                              // Update both startDate and period in a single state update
+                              const newPeriod = formatPeriod(value, item.endDate)
+                              updateExperienceMultiple(index, { startDate: value, period: newPeriod })
+                            }}
+                            placeholder="Select start date"
                           />
                         </div>
                         <div className="space-y-1">
+                          <Label className="text-xs">End Date</Label>
+                          <MonthYearPicker
+                            value={item.endDate || ""}
+                            onChange={(value) => {
+                              // Update both endDate and period in a single state update
+                              const newPeriod = formatPeriod(item.startDate, value)
+                              updateExperienceMultiple(index, { endDate: value, period: newPeriod })
+                            }}
+                            placeholder="Select end date"
+                            allowPresent={true}
+                          />
+                        </div>
+                        <div className="space-y-1 md:col-span-2">
                           <Label className="text-xs">Responsibilities (comma-separated)</Label>
                           <Textarea
                             value={item.responsibilities.join(", ")}

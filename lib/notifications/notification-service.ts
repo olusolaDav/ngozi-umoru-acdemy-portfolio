@@ -626,13 +626,13 @@ export async function getDashboardStats(userId: string): Promise<{
   const db = await getDb()
 
   // Get blog posts stats
-  const blogPosts = await db.collection("blog_posts").find({}).toArray()
+  const blogPosts = await db.collection("blogs").find({}).toArray()
   const publishedPosts = blogPosts.filter(p => p.status === "published")
   const draftPosts = blogPosts.filter(p => p.status === "draft")
   const totalViews = blogPosts.reduce((sum, p) => sum + (p.views || 0), 0)
 
   // Get contacts stats
-  const contacts = await db.collection("contacts").find({}).toArray()
+  const contacts = await db.collection("contact_submissions").find({}).toArray()
   const unreadContacts = contacts.filter(c => c.status === "new" || c.status === "unread").length
 
   // Get resources stats
@@ -664,7 +664,7 @@ export async function getDashboardStats(userId: string): Promise<{
  */
 export async function getUnreadContactsCount(): Promise<number> {
   const db = await getDb()
-  return await db.collection("contacts").countDocuments({
+  return await db.collection("contact_submissions").countDocuments({
     $or: [{ status: "new" }, { status: "unread" }],
   })
 }

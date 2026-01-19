@@ -165,18 +165,7 @@ export function LoginForm() {
 
           {error && <p className="text-sm text-destructive mt-2">{error}</p>}
 
-          {/* Divider */}
-          <div className="relative flex items-center justify-center">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border" />
-            </div>
-            <p
      
-              className="relative bg-background px-4 text-sm text-muted-foreground"
-            >
-              Powered by Academic Portfolio
-            </p>
-          </div>
 
          
         </form>

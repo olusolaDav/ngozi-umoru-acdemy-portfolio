@@ -169,7 +169,9 @@ export interface AboutSection {
 export interface ExperienceItem {
   position: string
   institution: string
-  period: string
+  period: string // Legacy field for display (computed from start/end dates)
+  startDate?: string // Format: "YYYY-MM" 
+  endDate?: string // Format: "YYYY-MM" or "present"
   responsibilities: string[]
 }
 

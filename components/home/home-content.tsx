@@ -37,6 +37,8 @@ interface SiteContent {
       position: string
       institution: string
       period: string
+      startDate?: string
+      endDate?: string
       responsibilities: string[]
     }>
   }

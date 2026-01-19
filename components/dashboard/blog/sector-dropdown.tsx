@@ -11,19 +11,19 @@ interface SectorDropdownProps {
 }
 
 const AVAILABLE_SECTORS = [
-  "Law",
-  "Health",
-  "Education",
-  "Technology",
-  "Finance",
-  "Oil and Gas",
-  "Healthcare",
-  "Telecommunications",
-  "Retail",
-  "Manufacturing",
-  "Automotive",
-  "Pharmaceuticals",
-  "Other",
+  "Academic Writing",
+  "Teaching & Pedagogy",
+  "EAP/ESL",
+  "Higher Education",
+  "Research & Methodology",
+  "Curriculum Development",
+  "Student Support",
+  "Professional Development",
+  "Educational Technology",
+  "Assessment & Feedback",
+  "Inclusive Education",
+  "Academic Skills",
+  "Reflections",
 ]
 
 export function SectorDropdown({ value, onChange, maxSelections = 3 }: SectorDropdownProps) {

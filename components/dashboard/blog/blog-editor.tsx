@@ -6,6 +6,7 @@
     import { Input } from "@/components/ui/input"
     import { Eye, Send, Save, FileText, Clock } from "lucide-react"
     import slugify from "slugify"
+    import { toast } from "@/hooks/use-toast"
     import "react-quill-new/dist/quill.snow.css"
 
     // Dynamically import ReactQuill with proper ref forwarding
@@ -23,6 +24,34 @@
         ),
       }
     )
+
+    // Toolbar button tooltip labels
+    const TOOLBAR_TOOLTIPS: Record<string, string> = {
+      'bold': 'Bold',
+      'italic': 'Italic',
+      'underline': 'Underline',
+      'strike': 'Strikethrough',
+      'blockquote': 'Quote',
+      'code-block': 'Code Block',
+      'link': 'Insert Link',
+      'image': 'Insert Image',
+      'video': 'Insert Video',
+      'clean': 'Clear Formatting',
+      'list': 'List',
+      'ordered': 'Numbered List',
+      'bullet': 'Bullet List',
+      'indent': 'Indent',
+      'direction': 'Text Direction',
+      'script': 'Subscript/Superscript',
+      'sub': 'Subscript',
+      'super': 'Superscript',
+      'header': 'Heading',
+      'font': 'Font Family',
+      'size': 'Font Size',
+      'color': 'Text Color',
+      'background': 'Background Color',
+      'align': 'Text Alignment',
+    }
 
     interface BlogEditorProps {
       initialTitle?: string
@@ -53,6 +82,121 @@
       
       // Track if component has initialized to prevent resetting user edits
       const hasInitialized = useRef(false)
+
+      // Upload image to Cloudinary
+      const uploadImageToCloudinary = useCallback(async (file: File): Promise<string | null> => {
+        try {
+          const formData = new FormData()
+          formData.append("file", file)
+
+          const res = await fetch("/api/upload/blog-image", {
+            method: "POST",
+            body: formData,
+          })
+
+          if (!res.ok) {
+            const errorData = await res.json()
+            throw new Error(errorData.error || "Upload failed")
+          }
+
+          const data = await res.json()
+          return data.data.url
+        } catch (error) {
+          console.error("Image upload error:", error)
+          toast({
+            title: "Upload Failed",
+            description: "Failed to upload image. Please try again.",
+            variant: "destructive",
+          })
+          return null
+        }
+      }, [])
+
+      // Handle paste events to intercept images
+      const handlePaste = useCallback(async (e: ClipboardEvent) => {
+        const items = e.clipboardData?.items
+        if (!items) return
+
+        for (let i = 0; i < items.length; i++) {
+          const item = items[i]
+          if (item.type.startsWith("image/")) {
+            e.preventDefault()
+            e.stopPropagation()
+
+            const file = item.getAsFile()
+            if (!file) continue
+
+            setIsUploading(true)
+            const imageUrl = await uploadImageToCloudinary(file)
+            setIsUploading(false)
+
+            if (imageUrl) {
+              const quill = quillRef.current?.getEditor?.()
+              if (quill) {
+                const range = quill.getSelection(true)
+                quill.insertEmbed(range.index, "image", imageUrl)
+                quill.setSelection(range.index + 1)
+              }
+            }
+            break
+          }
+        }
+      }, [uploadImageToCloudinary])
+
+      // Add tooltips to toolbar buttons
+      const addToolbarTooltips = useCallback(() => {
+        const toolbar = document.querySelector('.blog-editor .ql-toolbar')
+        if (!toolbar) return
+
+        // Add tooltips to buttons
+        toolbar.querySelectorAll('button').forEach((button) => {
+          const classList = Array.from(button.classList)
+          let tooltipText = ''
+
+          for (const cls of classList) {
+            if (cls.startsWith('ql-')) {
+              const toolName = cls.replace('ql-', '')
+              if (TOOLBAR_TOOLTIPS[toolName]) {
+                tooltipText = TOOLBAR_TOOLTIPS[toolName]
+                break
+              }
+              // Check for value attribute (e.g., list ordered/bullet)
+              const value = button.getAttribute('value')
+              if (value && TOOLBAR_TOOLTIPS[value]) {
+                tooltipText = TOOLBAR_TOOLTIPS[value]
+                break
+              }
+            }
+          }
+
+          if (tooltipText) {
+            button.setAttribute('title', tooltipText)
+          }
+        })
+
+        // Add tooltips to pickers (dropdowns)
+        toolbar.querySelectorAll('.ql-picker').forEach((picker) => {
+          const classList = Array.from(picker.classList)
+          let tooltipText = ''
+
+          for (const cls of classList) {
+            if (cls.startsWith('ql-')) {
+              const toolName = cls.replace('ql-', '')
+              if (TOOLBAR_TOOLTIPS[toolName]) {
+                tooltipText = TOOLBAR_TOOLTIPS[toolName]
+                break
+              }
+            }
+          }
+
+          if (tooltipText) {
+            const label = picker.querySelector('.ql-picker-label')
+            if (label) {
+              label.setAttribute('title', tooltipText)
+            }
+          }
+        })
+      }, [])
 
       // Debug: Log initial props on mount
       useEffect(() => {
@@ -105,6 +249,25 @@
         return imgMatch ? imgMatch[1] : null
       }, [content])
 
+      // Setup paste handler and tooltips
+      useEffect(() => {
+        // Add paste event listener
+        const editorContainer = document.querySelector('.blog-editor .ql-editor')
+        if (editorContainer) {
+          editorContainer.addEventListener('paste', handlePaste as EventListener)
+        }
+
+        // Add tooltips after a short delay to ensure toolbar is rendered
+        const tooltipTimer = setTimeout(addToolbarTooltips, 500)
+
+        return () => {
+          if (editorContainer) {
+            editorContainer.removeEventListener('paste', handlePaste as EventListener)
+          }
+          clearTimeout(tooltipTimer)
+        }
+      }, [handlePaste, addToolbarTooltips])
+
       // Auto-save draft every 5 seconds
       useEffect(() => {
         if (!title && !content) return
@@ -131,28 +294,16 @@
         fileInputRef.current?.click()
       }, [])
 
-      // Handle image file upload
+      // Handle image file upload via file picker
       const handleImageUpload = useCallback(async () => {
         const file = fileInputRef.current?.files?.[0]
         if (!file) return
 
         setIsUploading(true)
 
-        try {
-          const formData = new FormData()
-          formData.append("file", file)
-          formData.append("folder", "blog_content")
-
-          const res = await fetch("/api/upload/file", {
-            method: "POST",
-            body: formData,
-          })
-
-          if (!res.ok) throw new Error("Upload failed")
-
-          const data = await res.json()
-          const imageUrl = data.data.url
-
+        const imageUrl = await uploadImageToCloudinary(file)
+        
+        if (imageUrl) {
           // Insert image into editor
           const quill = quillRef.current?.getEditor?.()
           if (quill) {
@@ -160,27 +311,14 @@
             quill.insertEmbed(range.index, "image", imageUrl)
             quill.setSelection(range.index + 1)
           }
-        } catch (error) {
-          console.error("Image upload error:", error)
-          // Fallback to local preview if Cloudinary fails
-          const reader = new FileReader()
-          reader.onload = (e) => {
-            const quill = quillRef.current?.getEditor?.()
-            if (quill) {
-              const range = quill.getSelection(true)
-              quill.insertEmbed(range.index, "image", e.target?.result)
-              quill.setSelection(range.index + 1)
-            }
-          }
-          reader.readAsDataURL(file)
-        } finally {
-          setIsUploading(false)
-          // Reset file input
-          if (fileInputRef.current) {
-            fileInputRef.current.value = ""
-          }
         }
-      }, [])
+        
+        setIsUploading(false)
+        // Reset file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = ""
+        }
+      }, [uploadImageToCloudinary])
 
       // Quill toolbar modules configuration - Enhanced like Google Blogger
       const modules = useMemo(
@@ -256,8 +394,40 @@
         return () => document.removeEventListener('click', handleClickOutside)
       }, [])
 
-      // Handle save as draft
+      // Validate blog data for saving/publishing
+      const validateBlogData = useCallback(() => {
+        const errors: string[] = []
+        
+        if (!title.trim()) {
+          errors.push("Title is required")
+        }
+        
+        if (!slug.trim()) {
+          errors.push("Slug is required")
+        }
+        
+        // Check if content has actual text (not just empty HTML tags)
+        const textContent = (content || "").replace(/<[^>]+>/g, "").trim()
+        if (!textContent) {
+          errors.push("Blog content cannot be empty")
+        }
+        
+        return errors
+      }, [title, slug, content])
+
+      // Handle save as draft with validation
       const handleSaveDraft = async () => {
+        const errors = validateBlogData()
+        
+        if (errors.length > 0) {
+          toast({
+            title: "Cannot Save Draft",
+            description: errors.join(". "),
+            variant: "destructive",
+          })
+          return
+        }
+
         setStatus("saving")
         const thumbnail = getFirstImage()
         console.log("Saving draft with:", { title, slug, content: content?.substring(0, 100), thumbnail })
@@ -267,12 +437,44 @@
           await onSave?.({ title, slug, content, thumbnail })
           setStatus("saved")
           console.log("Draft saved successfully")
+          toast({
+            title: "Draft Saved",
+            description: "Your blog post has been saved as a draft.",
+          })
           setTimeout(() => setStatus("idle"), 2000)
         } catch (error) {
           console.error("Error saving draft:", error)
           setStatus("idle")
+          toast({
+            title: "Save Failed",
+            description: "Failed to save draft. Please try again.",
+            variant: "destructive",
+          })
         }
       }
+
+      // Handle publish with validation
+      const handlePublishClick = useCallback(() => {
+        const errors = validateBlogData()
+        
+        // Also check for thumbnail (first image in content)
+        const thumbnail = getFirstImage()
+        if (!thumbnail) {
+          errors.push("Include at least one image in your content for the thumbnail")
+        }
+        
+        if (errors.length > 0) {
+          toast({
+            title: "Cannot Publish",
+            description: errors.join(". "),
+            variant: "destructive",
+          })
+          return
+        }
+        
+        // If validation passes, call onPublish
+        onPublish?.()
+      }, [validateBlogData, getFirstImage, onPublish])
 
       // Get status display
       const getStatusDisplay = () => {
@@ -319,7 +521,7 @@
                 Preview
               </Button>
               <Button
-                onClick={onPublish}
+                onClick={handlePublishClick}
                 className="gap-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 px-6 text-white hover:from-cyan-600 hover:to-blue-700"
               >
                 <Send className="h-4 w-4" />

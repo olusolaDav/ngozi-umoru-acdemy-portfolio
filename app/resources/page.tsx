@@ -26,6 +26,21 @@ import {
 import { getFileTypeInfo, formatFileSize } from "@/lib/file-icons"
 import { formatDistanceToNow } from "date-fns"
 
+// Resource categories for academic portfolio
+const RESOURCE_CATEGORIES = [
+  { value: "worksheets", label: "Worksheets" },
+  { value: "curriculum", label: "Curriculum" },
+  { value: "lesson-slides", label: "Lesson Slides" },
+] as const
+
+type ResourceCategory = typeof RESOURCE_CATEGORIES[number]["value"]
+
+// Helper to get category label
+const getCategoryLabel = (categoryValue: string): string => {
+  const category = RESOURCE_CATEGORIES.find(c => c.value === categoryValue)
+  return category?.label || categoryValue
+}
+
 interface Resource {
   _id: string
   title: string
@@ -86,7 +101,7 @@ export default function ResourcesPage() {
   const [categories, setCategories] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [search, setSearch] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState("all")
+  const [selectedCategory, setSelectedCategory] = useState<"all" | ResourceCategory>("all")
   const [currentPage, setCurrentPage] = useState(1)
   const [total, setTotal] = useState(0)
   const itemsPerPage = 12
@@ -141,8 +156,8 @@ export default function ResourcesPage() {
             </p>
 
             {/* Search and Filter */}
-            <div className="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto">
-              <div className="relative flex-1">
+            <div className="flex flex-col gap-4 max-w-2xl mx-auto">
+              <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input
                   type="text"
@@ -152,23 +167,38 @@ export default function ResourcesPage() {
                   className="pl-10 h-12"
                 />
               </div>
-              <div className="relative">
-                <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => {
-                    setSelectedCategory(e.target.value)
+              
+              {/* Category Tabs */}
+              <div className="flex flex-wrap justify-center gap-2">
+                <button
+                  onClick={() => {
+                    setSelectedCategory("all")
                     setCurrentPage(1)
                   }}
-                  className="h-12 pl-10 pr-8 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring appearance-none cursor-pointer min-w-[180px]"
+                  className={`px-4 py-2 text-sm font-medium rounded-full transition-colors ${
+                    selectedCategory === "all"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground hover:bg-muted/80"
+                  }`}
                 >
-                  <option value="all">All Categories</option>
-                  {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                </select>
+                  All Resources
+                </button>
+                {RESOURCE_CATEGORIES.map((category) => (
+                  <button
+                    key={category.value}
+                    onClick={() => {
+                      setSelectedCategory(category.value)
+                      setCurrentPage(1)
+                    }}
+                    className={`px-4 py-2 text-sm font-medium rounded-full transition-colors ${
+                      selectedCategory === category.value
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground hover:bg-muted/80"
+                    }`}
+                  >
+                    {category.label}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
@@ -254,7 +284,12 @@ export default function ResourcesPage() {
                       <div className="flex-1" />
 
                       {/* Metadata */}
-                      <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+                      <div className="flex items-center flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400">
+                        {resource.category && (
+                          <span className="px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-medium">
+                            {getCategoryLabel(resource.category)}
+                          </span>
+                        )}
                         <span className="flex items-center gap-1">
                           <HardDrive className="h-3 w-3" />
                           {resource.bytes ? formatFileSize(resource.bytes) : "--"}
@@ -271,6 +306,7 @@ export default function ResourcesPage() {
                       <div className="flex-shrink-0">
                         <a 
                           href={resource.downloadUrl || resource.fileUrl} 
+                          download={resource.fileName || resource.title}
                           target="_blank" 
                           rel="noopener noreferrer" 
                           className="block"
@@ -279,8 +315,8 @@ export default function ResourcesPage() {
                             size="sm"
                             className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium h-8"
                           >
-                            <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
-                            View
+                            <Download className="mr-1.5 h-3.5 w-3.5" />
+                            Download
                           </Button>
                         </a>
                       </div>

@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
 
     // Get recent blog posts
     const recentPosts = await db
-      .collection("blog_posts")
+      .collection("blogs")
       .find({})
       .sort({ createdAt: -1 })
       .limit(5)
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
 
     // Get recent contacts
     const recentContacts = await db
-      .collection("contacts")
+      .collection("contact_submissions")
       .find({})
       .sort({ createdAt: -1 })
       .limit(5)

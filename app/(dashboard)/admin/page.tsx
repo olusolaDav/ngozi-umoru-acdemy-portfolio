@@ -36,6 +36,7 @@ interface Stats {
   draftPosts: number
   totalViews: number
   totalComments: number
+  pendingComments: number
   unreadNotifications: number
 }
 
@@ -46,6 +47,7 @@ interface RecentActivity {
   description: string
   timestamp: string
   status?: string
+  url?: string
 }
 
 interface RecentBlogPost {
@@ -67,12 +69,13 @@ interface RecentContact {
 }
 
 interface RecentNotification {
-  id: string
+  notificationId: string
   type: string
   title: string
   message: string
-  read: boolean
+  isRead: boolean
   createdAt: string
+  relatedUrl?: string
 }
 
 export default function AdminDashboardPage() {
@@ -85,6 +88,7 @@ export default function AdminDashboardPage() {
     draftPosts: 0,
     totalViews: 0,
     totalComments: 0,
+    pendingComments: 0,
     unreadNotifications: 0,
   })
   const [recentPosts, setRecentPosts] = useState<RecentBlogPost[]>([])
@@ -130,20 +134,26 @@ export default function AdminDashboardPage() {
       href: "/admin/blog",
     },
     {
-      title: "Total Views",
-      value: stats.totalViews.toLocaleString(),
-      subValue: "Across all posts",
-      icon: Eye,
-      color: "bg-green-50 dark:bg-green-950/30 text-green-600 dark:text-green-400",
-      href: "/admin/blog",
-    },
-    {
       title: "Contact Messages",
       value: stats.totalContacts,
-      subValue: `${stats.unreadContacts} unread`,
+      subValue: stats.unreadContacts > 0 ? `${stats.unreadContacts} unread` : "All read",
       icon: Mail,
-      color: "bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400",
+      color: stats.unreadContacts > 0 
+        ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400"
+        : "bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400",
       href: "/admin/contacts",
+      badge: stats.unreadContacts > 0 ? stats.unreadContacts : null,
+    },
+    {
+      title: "Notifications",
+      value: stats.unreadNotifications,
+      subValue: "Unread alerts",
+      icon: Bell,
+      color: stats.unreadNotifications > 0 
+        ? "bg-yellow-50 dark:bg-yellow-950/30 text-yellow-600 dark:text-yellow-400"
+        : "bg-gray-50 dark:bg-gray-950/30 text-gray-600 dark:text-gray-400",
+      href: "/admin/notifications",
+      badge: stats.unreadNotifications > 0 ? stats.unreadNotifications : null,
     },
     {
       title: "Resources",
@@ -232,7 +242,12 @@ export default function AdminDashboardPage() {
             const Icon = card.icon
             return (
               <Link key={card.title} href={card.href}>
-                <Card className="hover:shadow-md transition-all cursor-pointer border border-gray-200/50 dark:border-gray-700/50">
+                <Card className="hover:shadow-md transition-all cursor-pointer border border-gray-200/50 dark:border-gray-700/50 relative">
+                  {card.badge && (
+                    <span className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                      {card.badge > 9 ? "9+" : card.badge}
+                    </span>
+                  )}
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
@@ -401,12 +416,78 @@ export default function AdminDashboardPage() {
           </CardContent>
         </Card>
 
+        {/* Recent Notifications */}
+        <Card className="border border-gray-200/50 dark:border-gray-700/50">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="text-lg flex items-center gap-2">
+                Recent Notifications
+                {stats.unreadNotifications > 0 && (
+                  <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                    {stats.unreadNotifications} new
+                  </Badge>
+                )}
+              </CardTitle>
+              <CardDescription>Latest system alerts and updates</CardDescription>
+            </div>
+            <Link href="/admin/notifications">
+              <Button variant="outline" size="sm" className="gap-2">
+                View All <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+          </CardHeader>
+          <CardContent>
+            {recentNotifications.length === 0 ? (
+              <div className="text-center py-8">
+                <Bell className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+                <p className="text-gray-500 dark:text-gray-400">No notifications yet</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {recentNotifications.slice(0, 5).map((notification) => (
+                  <Link
+                    key={notification.notificationId}
+                    href={notification.relatedUrl || "/admin/notifications"}
+                  >
+                    <div
+                      className={`flex items-start gap-3 p-3 rounded-lg border transition-colors cursor-pointer ${
+                        notification.isRead
+                          ? "border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                          : "border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/20 hover:bg-blue-50 dark:hover:bg-blue-950/30"
+                      }`}
+                    >
+                      <div className={`w-2 h-2 rounded-full mt-2 shrink-0 ${
+                        notification.isRead ? "bg-gray-300 dark:bg-gray-600" : "bg-blue-500"
+                      }`} />
+                      <div className="flex-1 min-w-0">
+                        <p className={`text-sm font-medium ${
+                          notification.isRead
+                            ? "text-gray-700 dark:text-gray-300"
+                            : "text-gray-900 dark:text-gray-50"
+                        }`}>
+                          {notification.title}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
+                          {notification.message}
+                        </p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                          {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Footer Stats */}
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-4">
           <Card className="border border-gray-200/50 dark:border-gray-700/50">
             <CardContent className="p-6 flex items-center gap-4">
               <div className="w-12 h-12 rounded-lg bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center">
-                <BarChart3 className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                <MessageSquare className="h-6 w-6 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Comments</p>
@@ -417,7 +498,18 @@ export default function AdminDashboardPage() {
           <Card className="border border-gray-200/50 dark:border-gray-700/50">
             <CardContent className="p-6 flex items-center gap-4">
               <div className="w-12 h-12 rounded-lg bg-green-50 dark:bg-green-950/30 flex items-center justify-center">
-                <BookOpen className="h-6 w-6 text-green-600 dark:text-green-400" />
+                <Eye className="h-6 w-6 text-green-600 dark:text-green-400" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Views</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-50">{stats.totalViews.toLocaleString()}</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="border border-gray-200/50 dark:border-gray-700/50">
+            <CardContent className="p-6 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-lg bg-purple-50 dark:bg-purple-950/30 flex items-center justify-center">
+                <BookOpen className="h-6 w-6 text-purple-600 dark:text-purple-400" />
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Published Posts</p>

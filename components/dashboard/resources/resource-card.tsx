@@ -3,8 +3,21 @@
 import React from "react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { ExternalLink, Trash2, Calendar, HardDrive } from "lucide-react"
+import { ExternalLink, Trash2, Calendar, HardDrive, Download } from "lucide-react"
 import { getFileTypeInfo, formatFileSize } from "@/lib/file-icons"
+
+// Resource categories for academic portfolio
+const RESOURCE_CATEGORIES = [
+  { value: "worksheets", label: "Worksheets" },
+  { value: "curriculum", label: "Curriculum" },
+  { value: "lesson-slides", label: "Lesson Slides" },
+] as const
+
+// Helper to get category label
+const getCategoryLabel = (categoryValue: string): string => {
+  const category = RESOURCE_CATEGORIES.find(c => c.value === categoryValue)
+  return category?.label || categoryValue
+}
 
 interface FileInfo {
   url: string
@@ -14,12 +27,14 @@ interface FileInfo {
   format: string
   resourceType: string
   thumbnail?: string
+  downloadUrl?: string
 }
 
 interface ResourceCardProps {
   id: string
   title: string
   description: string
+  category?: string
   file: FileInfo
   isSelected?: boolean
   selectMode?: boolean
@@ -33,6 +48,7 @@ export function ResourceCard({
   id,
   title,
   description,
+  category,
   file,
   isSelected = false,
   selectMode = false,
@@ -89,7 +105,12 @@ export function ResourceCard({
         </div>
         
         {/* Metadata */}
-        <div className="flex items-center gap-4 mt-2 text-xs text-gray-500 dark:text-gray-400">
+        <div className="flex items-center flex-wrap gap-2 mt-2 text-xs text-gray-500 dark:text-gray-400">
+          {category && (
+            <span className="px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-medium">
+              {getCategoryLabel(category)}
+            </span>
+          )}
           <span className="flex items-center gap-1">
             <HardDrive className="h-3 w-3" />
             {formatFileSize(file.size)}

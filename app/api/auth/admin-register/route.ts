@@ -1,3 +1,4 @@
+//app/api/auth/admin-register/route.ts
 import { NextResponse } from "next/server"
 import { getDb } from "@/lib/mongodb"
 import { hashPassword } from "@/lib/auth"
