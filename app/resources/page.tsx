@@ -254,46 +254,45 @@ export default function ResourcesPage() {
                   return (
                     <div 
                       key={resource._id} 
-                      className="group relative flex flex-col gap-4 p-5 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-900/80 border border-gray-200 dark:border-gray-700 rounded-2xl transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10 hover:border-blue-300 dark:hover:border-blue-700 hover:-translate-y-1 h-[400px]"
+                      className="group relative flex flex-col p-5 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-900/80 border border-gray-200 dark:border-gray-700 rounded-2xl transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10 hover:border-blue-300 dark:hover:border-blue-700 hover:-translate-y-1 h-[380px]"
                     >
                       {/* File Icon - Larger and Centered */}
-                      <div className="flex justify-center mb-2">
+                      <div className="flex justify-center mb-3">
                         <div className={`w-16 h-16 rounded-2xl ${fileInfo.bgColor} flex items-center justify-center shadow-lg transform transition-transform group-hover:scale-110 group-hover:rotate-3`}>
                           <Icon className={`h-8 w-8 ${fileInfo.color}`} />
                         </div>
                       </div>
 
                       {/* File Type Badge */}
-                      <div className="flex justify-center mb-2">
+                      <div className="flex justify-center mb-3">
                         <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${fileInfo.bgColor} ${fileInfo.color} border border-current/20`}>
                           {fileInfo.label}
                         </span>
                       </div>
 
-                      {/* Content */}
-                      <div className="flex-1 text-center min-h-0">
-                        <h3 className="font-bold text-gray-900 dark:text-gray-50 line-clamp-2 text-sm mb-2 leading-snug">
+                      {/* Content - Title and Description */}
+                      <div className="text-center mb-3">
+                        <h3 className="font-bold text-gray-900 dark:text-gray-50 line-clamp-2 text-sm mb-2 leading-tight px-2">
                           {resource.title}
                         </h3>
-                        <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-3 leading-relaxed">
+                        <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 leading-relaxed px-2">
                           {resource.description || "No description available"}
                         </p>
                       </div>
 
-                      {/* Spacer */}
-                      <div className="flex-1" />
-
-                      {/* Category Badge */}
+                      {/* Category Badge - Very small */}
                       {resource.category && (
-                        <div className="flex justify-center">
-                          <span className="px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold text-xs">
+                        <div className="flex justify-center mb-3">
+                          <span className="px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-medium text-[10px]">
                             {getCategoryLabel(resource.category)}
                           </span>
                         </div>
                       )}
+                      {/* Spacer to push metadata and button to bottom */}
+                      <div className="flex-grow" />
 
                       {/* Metadata */}
-                      <div className="flex items-center justify-center gap-4 text-xs text-gray-500 dark:text-gray-400 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3">
+                      <div className="flex items-center justify-center gap-4 text-xs text-gray-500 dark:text-gray-400 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3 mt-auto">
                         <span className="flex items-center gap-1.5 font-medium">
                           <HardDrive className="h-3.5 w-3.5" />
                           {resource.bytes ? formatFileSize(resource.bytes) : "--"}
