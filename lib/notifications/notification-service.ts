@@ -635,11 +635,11 @@ export async function getDashboardStats(userId: string): Promise<{
   const contacts = await db.collection("contact_submissions").find({}).toArray()
   const unreadContacts = contacts.filter(c => c.status === "new" || c.status === "unread").length
 
-  // Get resources stats
-  const resources = await db.collection("resources").countDocuments({})
+  // Get resources stats (only count active resources)
+  const resources = await db.collection("resources").countDocuments({ isActive: true })
 
   // Get comments stats
-  const comments = await db.collection("blog_comments").find({}).toArray()
+  const comments = await db.collection("comments").find({}).toArray()
   const pendingComments = comments.filter(c => c.status === "pending").length
 
   // Get unread notifications

@@ -3,7 +3,7 @@
 import React from "react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { ExternalLink, Trash2, Calendar, HardDrive, Download } from "lucide-react"
+import { ExternalLink, Trash2, Calendar, HardDrive, Download, Eye } from "lucide-react"
 import { getFileTypeInfo, formatFileSize } from "@/lib/file-icons"
 
 // Resource categories for academic portfolio
@@ -60,11 +60,36 @@ export function ResourceCard({
   const fileTypeInfo = getFileTypeInfo(file.originalName, file.resourceType)
   const IconComponent = fileTypeInfo.icon
 
+  // Determine if file should be viewed or downloaded
+  const isViewableFile = () => {
+    const format = file.format?.toLowerCase()
+    const resourceType = file.resourceType?.toLowerCase()
+    
+    // PDF, images, audio, and video can be viewed in browser
+    if (resourceType === 'image' || resourceType === 'video') return true
+    if (format === 'pdf') return true
+    if (['mp3', 'wav', 'ogg', 'aac', 'mpeg'].includes(format || '')) return true
+    
+    // Check file extension from originalName as fallback
+    const extension = file.originalName?.split('.').pop()?.toLowerCase()
+    if (extension === 'pdf') return true
+    if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(extension || '')) return true
+    if (['mp4', 'webm', 'mov'].includes(extension || '')) return true
+    if (['mp3', 'wav', 'ogg'].includes(extension || '')) return true
+    
+    // Other files (Word, PowerPoint, Excel, etc.) should be downloaded
+    return false
+  }
+
   const handleViewClick = () => {
     if (file.url) {
       window.open(file.url, '_blank', 'noopener,noreferrer')
     }
   }
+
+  const shouldView = isViewableFile()
+  const buttonIcon = shouldView ? Eye : Download
+  const buttonText = shouldView ? 'View' : 'Download'
 
   return (
     <div
@@ -131,8 +156,8 @@ export function ResourceCard({
           size="sm"
           className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium h-8 px-4"
         >
-          <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
-          View
+          {React.createElement(buttonIcon, { className: "mr-1.5 h-3.5 w-3.5" })}
+          {buttonText}
         </Button>
         {onDelete && (
           <Button

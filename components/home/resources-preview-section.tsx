@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import Link from "next/link"
-import { FileText, Download, ExternalLink, File, Image as ImageIcon, Video, Music, Archive, ArrowRight, HardDrive, Calendar } from "lucide-react"
+import { FileText, Download, ExternalLink, File, Image as ImageIcon, Video, Music, Archive, ArrowRight, HardDrive, Calendar, Eye } from "lucide-react"
 import { getFileTypeInfo, formatFileSize } from "@/lib/file-icons"
 import { formatDistanceToNow } from "date-fns"
 import { ScrollAnimation } from "@/components/ui/scroll-animation"
@@ -171,65 +171,91 @@ export function ResourcesPreviewSection() {
 
             return (
               <ScrollAnimation key={resource._id} delay={index * 0.1}>
-                <div className="group relative flex flex-col gap-4 p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl transition-all duration-200 hover:shadow-md hover:border-gray-300 dark:hover:border-gray-600 aspect-square">
-                  {/* Top Row: File Icon + Content + Badge */}
-                  <div className="flex items-start gap-4">
-                    {/* File Icon */}
-                    <div className={`flex-shrink-0 w-14 h-14 rounded-lg ${fileInfo.bgColor} flex items-center justify-center`}>
-                      <Icon className={`h-7 w-7 ${fileInfo.color}`} />
+                <div className="group relative flex flex-col gap-4 p-5 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-900/80 border border-gray-200 dark:border-gray-700 rounded-2xl transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10 hover:border-blue-300 dark:hover:border-blue-700 hover:-translate-y-1 h-[420px]">
+                  {/* File Icon - Larger and Centered */}
+                  <div className="flex justify-center mb-2">
+                    <div className={`w-20 h-20 rounded-2xl ${fileInfo.bgColor} flex items-center justify-center shadow-lg transform transition-transform group-hover:scale-110 group-hover:rotate-3`}>
+                      <Icon className={`h-10 w-10 ${fileInfo.color}`} />
                     </div>
+                  </div>
 
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0 flex-1">
-                          <h3 className="font-semibold text-gray-900 dark:text-gray-50 line-clamp-2 text-sm">
-                            {resource.title}
-                          </h3>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mt-0.5">
-                            {resource.description || "No description"}
-                          </p>
-                        </div>
-                        <span className={`flex-shrink-0 px-2 py-0.5 rounded text-xs font-medium ${fileInfo.bgColor} ${fileInfo.color}`}>
-                          {fileInfo.label}
-                        </span>
-                      </div>
-                    </div>
+                  {/* File Type Badge */}
+                  <div className="flex justify-center mb-3">
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${fileInfo.bgColor} ${fileInfo.color} border border-current/20`}>
+                      {fileInfo.label}
+                    </span>
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 text-center min-h-0">
+                    <h3 className="font-bold text-gray-900 dark:text-gray-50 line-clamp-2 text-base mb-2 leading-snug">
+                      {resource.title}
+                    </h3>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-3 leading-relaxed">
+                      {resource.description || "No description available"}
+                    </p>
                   </div>
 
                   {/* Spacer */}
                   <div className="flex-1" />
 
                   {/* Metadata */}
-                  <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
-                    <span className="flex items-center gap-1">
-                      <HardDrive className="h-3 w-3" />
+                  <div className="flex items-center justify-center gap-4 text-xs text-gray-500 dark:text-gray-400 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3">
+                    <span className="flex items-center gap-1.5 font-medium">
+                      <HardDrive className="h-3.5 w-3.5" />
                       {resource.bytes ? formatFileSize(resource.bytes) : "--"}
                     </span>
                     {resource.createdAt && (
-                      <span className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        {new Date(resource.createdAt).toLocaleDateString()}
+                      <span className="flex items-center gap-1.5 font-medium">
+                        <Calendar className="h-3.5 w-3.5" />
+                        {new Date(resource.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       </span>
                     )}
                   </div>
 
                   {/* Actions */}
                   <div className="flex-shrink-0">
-                    <a 
-                      href={resource.downloadUrl || resource.fileUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="block"
-                    >
-                      <Button
-                        size="sm"
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium h-8"
-                      >
-                        <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
-                        View
-                      </Button>
-                    </a>
+                    {(() => {
+                      const format = resource.format?.toLowerCase()
+                      const resourceType = resource.resourceType?.toLowerCase()
+                      const extension = resource.fileName?.split('.').pop()?.toLowerCase()
+                      
+                      // Determine if file should be viewed or downloaded
+                      let isViewable = 
+                        resourceType === 'image' || 
+                        resourceType === 'video' ||
+                        format === 'pdf' ||
+                        ['mp3', 'wav', 'ogg', 'aac', 'mpeg'].includes(format || '')
+                      
+                      // Check file extension as fallback
+                      if (!isViewable && extension) {
+                        if (extension === 'pdf') isViewable = true
+                        if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(extension)) isViewable = true
+                        if (['mp4', 'webm', 'mov'].includes(extension)) isViewable = true
+                        if (['mp3', 'wav', 'ogg'].includes(extension)) isViewable = true
+                      }
+                      
+                      const ButtonIcon = isViewable ? Eye : Download
+                      const buttonText = isViewable ? 'View' : 'Download'
+                      
+                      return (
+                        <a 
+                          href={resource.downloadUrl || resource.fileUrl} 
+                          download={!isViewable ? (resource.fileName || resource.title) : undefined}
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="block"
+                        >
+                          <Button
+                            size="sm"
+                            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-sm font-semibold h-10 shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer "
+                          >
+                            <ButtonIcon className="mr-2 h-4 w-4" />
+                            {buttonText}
+                          </Button>
+                        </a>
+                      )
+                    })()}
                   </div>
                 </div>
               </ScrollAnimation>
