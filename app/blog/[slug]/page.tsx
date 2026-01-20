@@ -4,6 +4,7 @@ import { BlogDetailHero } from "@/components/blog/blog-detail-hero"
 import { BlogDetailContent } from "@/components/blog/blog-detail-content"
 import { BlogComments } from "@/components/blog/blog-comments"
 import { RelatedBlogs } from "@/components/blog/related-blogs"
+import { ArticleSchema, BreadcrumbListSchema } from "@/components/structured-data"
 
 import { getBlogBySlug, listPublishedCommentsByPost, incrementBlogViews, type BlogRecord } from "@/lib/blog"
 import { notFound } from "next/navigation"
@@ -34,12 +35,15 @@ export async function generateMetadata({ params }: BlogDetailPageProps): Promise
   const modifiedTime = post.updatedAt || post.createdAt
 
   return {
-    title: `${post.title} | Ngozi Umori Blog`,
-    description: post.excerpt || `Read about ${post.title} on Academic Portfolio Blog.`,
-    keywords: post.tags || ["data protection", "compliance", "AI governance"],
-    authors: [{ name: post.authorName || "Academic Portfolio" }],
-    creator: post.authorName || "Academic Portfolio",
-    publisher: "Academic Portfolio",
+    title: `${post.title} | Ngozi Blessing Umoru (PhD)- Academic Blog UK`,
+    description: post.excerpt || `Expert insights on ${post.title} from Ngozi Blessing Umoru (PhD), Award-winning Academic English Lecturer and PhD researcher in the UK. Read evidence-based teaching strategies and scholarly research.`,
+    keywords: post.tags || ["academic english", "eap teaching", "higher education uk", "pedagogy research", "teaching methodologies"],
+    authors: [{ name: post.authorName || "Ngozi Blessing Umoru (PhD)", url: "https://ngoziumoru.info" }],
+    creator: post.authorName || "Ngozi Blessing Umoru (PhD)",
+    publisher: "Ngozi Blessing Umoru (PhD)",
+    alternates: {
+      canonical: postUrl,
+    },
     robots: {
       index: true,
       follow: true,
@@ -53,11 +57,11 @@ export async function generateMetadata({ params }: BlogDetailPageProps): Promise
     },
     openGraph: {
       type: "article",
-      locale: "en_US",
+      locale: "en_GB",
       url: postUrl,
-      siteName: "Academic Portfolio",
+      siteName: "Ngozi Blessing Umoru (PhD)- Academic Portfolio",
       title: post.title,
-      description: post.excerpt || `Read about ${post.title} on Academic Portfolio Blog.`,
+      description: post.excerpt || `Expert insights on ${post.title} from an award-winning UK-based Academic English Lecturer and PhD researcher.`,
       images: [
         {
           url: thumbnailUrl,
@@ -68,19 +72,14 @@ export async function generateMetadata({ params }: BlogDetailPageProps): Promise
       ],
       publishedTime: new Date(publishedTime).toISOString(),
       modifiedTime: new Date(modifiedTime).toISOString(),
-      authors: [post.authorName || "Academic Portfolio"],
+      authors: [post.authorName || "Ngozi Blessing Umoru (PhD)"],
       tags: post.tags || [],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
-      description: post.excerpt || `Read about ${post.title} on Academic Portfolio Blog.`,
+      description: post.excerpt || `Expert insights on ${post.title} from Ngozi Blessing Umoru (PhD).`,
       images: [thumbnailUrl],
-      creator: "@accuvice",
-      site: "@accuvice",
-    },
-    alternates: {
-      canonical: postUrl,
     },
     other: {
       "article:published_time": new Date(publishedTime).toISOString(),
@@ -145,6 +144,26 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
 
   return (
     <main className="min-h-screen  mx-auto bg-background">
+      {/* Structured Data for SEO */}
+      <ArticleSchema
+        headline={formattedPost.title}
+        description={formattedPost.excerpt}
+        url={`${siteUrl}/blog/${formattedPost.slug}`}
+        imageUrl={formattedPost.thumbnail}
+        datePublished={new Date(formattedPost.publishedAt || formattedPost.createdAt).toISOString()}
+        dateModified={new Date(formattedPost.updatedAt || formattedPost.createdAt).toISOString()}
+        authorName={formattedPost.author.name}
+        authorUrl={siteUrl}
+        tags={formattedPost.tags}
+      />
+      <BreadcrumbListSchema
+        items={[
+          { name: "Home", url: siteUrl },
+          { name: "Blog", url: `${siteUrl}/blog` },
+          { name: formattedPost.title, url: `${siteUrl}/blog/${formattedPost.slug}` },
+        ]}
+      />
+      
       <Navigation />
       <BlogDetailHero post={formattedPost} />
       <BlogDetailContent post={formattedPost} />

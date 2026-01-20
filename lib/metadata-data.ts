@@ -7,7 +7,7 @@ import type { SiteMetadata } from "./site-types"
 
 export const defaultMetadata: SiteMetadata = {
   // Site-wide settings
-  siteName: "Dr. Ngozi Blessing Umoru | Academic Portfolio",
+  siteName: "Ngozi Blessing Umoru (PhD)| Academic Portfolio",
   siteDescription: "Dynamic and student-centred Lecturer and Academic English Tutor with extensive experience teaching Academic English, EAP/ESL, Humanities, and Foundation-level courses across UK FE/HE settings.",
   siteUrl: "https://ngoziumoru.com",
   locale: "en_GB",
@@ -16,7 +16,7 @@ export const defaultMetadata: SiteMetadata = {
   // Page-specific metadata
   pages: {
     home: {
-      title: "Dr. Ngozi Blessing Umoru | Academic English Tutor & Lecturer | UK",
+      title: "Ngozi Blessing Umoru (PhD)| Academic English Tutor & Lecturer | UK",
       description: "Dynamic and student-centred Lecturer and Academic English Tutor with extensive experience teaching Academic English, EAP/ESL, Humanities, and Foundation-level courses across UK FE/HE settings. PhD in Education & Pedagogy.",
       keywords: [
         "academic english tutor uk",
@@ -38,14 +38,14 @@ export const defaultMetadata: SiteMetadata = {
         "curriculum development",
         "academic skills tutor",
       ],
-      ogTitle: "Dr. Ngozi Blessing Umoru | Academic English Tutor & Lecturer",
+      ogTitle: "Ngozi Blessing Umoru (PhD)| Academic English Tutor & Lecturer",
       ogDescription: "PhD researcher and Academic English Tutor with extensive UK FE/HE teaching experience. Specialising in EAP/ESL, Academic Writing, and Humanities instruction.",
       ogImage: "/Ngozi Umoru.png",
       canonicalUrl: "https://ngoziumoru.com",
     },
     blog: {
-      title: "Blog | Dr. Ngozi Blessing Umoru | Academic Insights & Education",
-      description: "Explore academic insights, education research, teaching methodologies, and scholarly perspectives from Dr. Ngozi Blessing Umoru - PhD researcher and Academic English Tutor.",
+      title: "Blog | Ngozi Blessing Umoru (PhD)| Academic Insights & Education",
+      description: "Explore academic insights, education research, teaching methodologies, and scholarly perspectives from Ngozi Blessing Umoru (PhD)- PhD researcher and Academic English Tutor.",
       keywords: [
         "academic blog",
         "education research blog",
@@ -58,14 +58,14 @@ export const defaultMetadata: SiteMetadata = {
         "uk academic blog",
         "scholarly articles",
       ],
-      ogTitle: "Blog | Dr. Ngozi Blessing Umoru",
+      ogTitle: "Blog | Ngozi Blessing Umoru (PhD)",
       ogDescription: "Academic insights, education research, and teaching perspectives from a PhD researcher and Academic English Tutor.",
       ogImage: "/Ngozi Umoru.png",
       canonicalUrl: "https://ngoziumoru.com/blog",
     },
     contact: {
-      title: "Contact | Dr. Ngozi Blessing Umoru | Academic Collaboration & Enquiries",
-      description: "Get in touch with Dr. Ngozi Blessing Umoru for academic collaboration, tutoring enquiries, research partnerships, or speaking engagements in the UK.",
+      title: "Contact | Ngozi Blessing Umoru (PhD)| Academic Collaboration & Enquiries",
+      description: "Get in touch with Ngozi Blessing Umoru (PhD)for academic collaboration, tutoring enquiries, research partnerships, or speaking engagements in the UK.",
       keywords: [
         "contact academic tutor",
         "hire eap tutor uk",
@@ -76,14 +76,14 @@ export const defaultMetadata: SiteMetadata = {
         "research collaboration",
         "academic partnership",
       ],
-      ogTitle: "Contact | Dr. Ngozi Blessing Umoru",
+      ogTitle: "Contact | Ngozi Blessing Umoru (PhD)",
       ogDescription: "Reach out for academic collaboration, tutoring enquiries, or research partnerships.",
       ogImage: "/Ngozi Umoru.png",
       canonicalUrl: "https://ngoziumoru.com/contact",
     },
     resources: {
-      title: "Resources | Dr. Ngozi Blessing Umoru | Academic Materials & Downloads",
-      description: "Access free academic resources, teaching materials, research papers, and educational downloads from Dr. Ngozi Blessing Umoru - Academic English Tutor & PhD Researcher.",
+      title: "Resources | Ngozi Blessing Umoru (PhD)| Academic Materials & Downloads",
+      description: "Access free academic resources, teaching materials, research papers, and educational downloads from Ngozi Blessing Umoru (PhD)- Academic English Tutor & PhD Researcher.",
       keywords: [
         "academic resources",
         "teaching materials",
@@ -95,7 +95,7 @@ export const defaultMetadata: SiteMetadata = {
         "study materials",
         "learning resources",
       ],
-      ogTitle: "Resources | Dr. Ngozi Blessing Umoru",
+      ogTitle: "Resources | Ngozi Blessing Umoru (PhD)",
       ogDescription: "Free academic resources, teaching materials, and educational downloads.",
       ogImage: "/Ngozi Umoru.png",
       canonicalUrl: "https://ngoziumoru.com/resources",
@@ -105,7 +105,7 @@ export const defaultMetadata: SiteMetadata = {
   // Schema.org structured data for academics
   schemaOrg: {
     type: "Person",
-    name: "Dr. Ngozi Blessing Umoru",
+    name: "Ngozi Blessing Umoru (PhD)",
     jobTitle: "Academic English Tutor & Lecturer",
     worksFor: undefined,
     alumniOf: [

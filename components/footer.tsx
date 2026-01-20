@@ -7,7 +7,7 @@ export function Footer() {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="font-semibold text-lg mb-4">Dr. Ngozi Blessing Umoru</h3>
+            <h3 className="font-semibold text-lg mb-4">Ngozi Blessing Umoru (PhD)</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Dynamic and student-centred Lecturer and Academic English Tutor with extensive experience in UK FE/HE
               settings.
@@ -71,7 +71,7 @@ export function Footer() {
         </div>
 
         <div className="mt-8 pt-8 border-t border-border text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Dr. Ngozi Blessing Umoru. All rights reserved.
+          © {new Date().getFullYear()} Ngozi Blessing Umoru (PhD). All rights reserved.
         </div>
       </div>
     </footer>

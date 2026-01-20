@@ -5,24 +5,72 @@ import { BlogListingContent } from "@/components/blog/blog-listing-content"
 
 import type { Metadata } from "next"
 
-// Static metadata for blog page
+// Optimized metadata for blog listing page
 export const metadata: Metadata = {
-  title: "Blog | Academic Insights & Education Research | Dr. Ngozi Blessing Umoru",
-  description: "Explore academic insights, education research, teaching methodologies, and scholarly perspectives from Dr. Ngozi Blessing Umoru - PhD researcher and Academic English Tutor.",
-  keywords: "academic blog, education research, teaching insights, eap teaching, academic writing, higher education, pedagogy research",
-  authors: [{ name: "Dr. Ngozi Blessing Umoru" }],
-  creator: "Dr. Ngozi Blessing Umoru",
+  title: "Academic Blog | Education Research & Teaching Insights UK | Ngozi Blessing Umoru (PhD)",
+  description: "Explore expert insights on Academic English, EAP teaching methodologies, higher education pedagogy, and scholarly research from Ngozi Blessing Umoru (PhD)- Award-winning PhD researcher and Academic English Lecturer in the UK. Stay updated with evidence-based teaching practices and academic development strategies.",
+  keywords: [
+    // Primary blog keywords
+    "academic blog uk",
+    "education research blog",
+    "eap teaching blog",
+    "academic english insights",
+    "higher education uk blog",
+    // Teaching methodologies
+    "pedagogy blog",
+    "teaching strategies uk",
+    "academic writing tips",
+    "student-centred learning",
+    "curriculum development insights",
+    // Specific topics
+    "esl teaching methods",
+    "international student support",
+    "foundation year teaching",
+    "fe he education blog",
+    // Author branding
+    "ngozi umoru blog",
+    "education phd insights"
+  ].join(", "),
+  authors: [{ name: "Ngozi Blessing Umoru (PhD)", url: "https://ngoziumoru.info" }],
+  creator: "Ngozi Blessing Umoru (PhD)",
+  publisher: "Ngozi Blessing Umoru (PhD)",
+  alternates: {
+    canonical: "https://ngoziumoru.info/blog",
+  },
   openGraph: {
-    title: "Blog | Dr. Ngozi Blessing Umoru",
-    description: "Academic insights, education research, and teaching perspectives from a PhD researcher and Academic English Tutor.",
+    title: "Academic Blog | Education Research & Teaching Insights UK",
+    description: "Expert insights on Academic English, EAP teaching, higher education pedagogy, and scholarly research from an award-winning UK-based Academic English Lecturer and PhD researcher.",
+    url: "https://ngoziumoru.info/blog",
+    siteName: "Ngozi Blessing Umoru (PhD)- Academic Portfolio",
     type: "website",
     locale: "en_GB",
+    images: [
+      {
+        url: "https://ngoziumoru.info/og-image-blog.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Academic Blog by Ngozi Blessing Umoru (PhD)",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Blog | Dr. Ngozi Blessing Umoru", 
-    description: "Academic insights, education research, and teaching perspectives.",
+    title: "Academic Blog | Education Research & Teaching Insights UK", 
+    description: "Expert insights on Academic English, EAP teaching, and higher education pedagogy from Ngozi Blessing Umoru (PhD).",
+    images: ["https://ngoziumoru.info/og-image-blog.jpg"],
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  category: "Education",
 }
 
 export default function BlogPage() {

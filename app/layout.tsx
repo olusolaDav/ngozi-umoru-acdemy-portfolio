@@ -6,6 +6,7 @@ import { Toaster } from "sonner"
 import "./globals.css"
 import { AuthProvider } from "@/lib/hooks/use-auth"
 import { getSiteMetadata, generateMetadata, generateStructuredData, defaultMetadataFallback } from "@/lib/metadata-service"
+import { GoogleAnalytics } from "@/components/analytics"
 
 // Force dynamic rendering for the entire app since we fetch site metadata
 export const dynamic = 'force-dynamic'
@@ -43,6 +44,11 @@ export default async function RootLayout({
         )}
       </head>
       <body className={`font-sans antialiased`}>
+        {/* Google Analytics */}
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+        )}
+        
         <AuthProvider>
           {children}
         </AuthProvider>

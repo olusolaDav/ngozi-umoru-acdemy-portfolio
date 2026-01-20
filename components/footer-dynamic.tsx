@@ -112,7 +112,7 @@ export function Footer() {
   // Fallback data if loading or API fails
   const fallbackData: FooterContent = {
     about: {
-      name: "Dr. Ngozi Blessing Umoru",
+      name: "Ngozi Blessing Umoru (PhD)",
       description: "Dynamic and student-centred Lecturer and Academic English Tutor with extensive experience in UK FE/HE settings."
     },
     quickLinks: {
@@ -146,7 +146,7 @@ export function Footer() {
       email: "hello@ngoziumoru.info"
     },
     copyright: {
-      text: "Dr. Ngozi Blessing Umoru. All rights reserved.",
+      text: "Ngozi Blessing Umoru (PhD). All rights reserved.",
       year: new Date().getFullYear()
     }
   }

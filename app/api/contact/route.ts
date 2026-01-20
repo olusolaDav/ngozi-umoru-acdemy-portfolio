@@ -156,7 +156,7 @@ function userConfirmationTemplate(data: {
   const purposeLabel = purposeLabels[data.purpose] || data.purpose
   
   return {
-    subject: `We've received your message - Dr. Ngozi Blessing Umoru`,
+    subject: `We've received your message - Ngozi Blessing Umoru (PhD)`,
     text: `
 Hello ${data.fullName},
 
@@ -170,7 +170,7 @@ ${data.message}
 If your inquiry is urgent, please don't hesitate to reach out through alternative channels.
 
 Best regards,
-Dr. Ngozi Blessing Umoru
+Ngozi Blessing Umoru (PhD)
 
 ---
 This is an automated confirmation. Please do not reply to this email.
@@ -207,7 +207,7 @@ This is an automated confirmation. Please do not reply to this email.
       
       <p>If your inquiry is urgent, please reach out through alternative channels.</p>
       
-      <p>Best regards,<br><strong>Dr. Ngozi Blessing Umoru</strong></p>
+      <p>Best regards,<br><strong>Ngozi Blessing Umoru (PhD)</strong></p>
     </div>
     <div class="footer">
       <p>This is an automated confirmation. Please do not reply to this email.</p>

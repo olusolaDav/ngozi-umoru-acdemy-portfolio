@@ -12,8 +12,8 @@ export async function generateContactMetadata(): Promise<Metadata> {
   // Fallback metadata for contact
   return {
     ...defaultMetadataFallback,
-    title: "Contact | Dr. Ngozi Blessing Umoru | Academic Collaboration & Enquiries",
-    description: "Get in touch with Dr. Ngozi Blessing Umoru for academic collaboration, tutoring enquiries, research partnerships, or speaking engagements in the UK.",
+    title: "Contact | Ngozi Blessing Umoru (PhD)| Academic Collaboration & Enquiries",
+    description: "Get in touch with Ngozi Blessing Umoru (PhD)for academic collaboration, tutoring enquiries, research partnerships, or speaking engagements in the UK.",
   }
 }
 
@@ -28,8 +28,8 @@ export async function generateResourcesMetadata(): Promise<Metadata> {
   // Fallback metadata for resources
   return {
     ...defaultMetadataFallback,
-    title: "Resources | Dr. Ngozi Blessing Umoru | Academic Materials & Downloads",
-    description: "Access free academic resources, teaching materials, research papers, and educational downloads from Dr. Ngozi Blessing Umoru - Academic English Tutor & PhD Researcher.",
+    title: "Resources | Ngozi Blessing Umoru (PhD)| Academic Materials & Downloads",
+    description: "Access free academic resources, teaching materials, research papers, and educational downloads from Ngozi Blessing Umoru (PhD)- Academic English Tutor & PhD Researcher.",
   }
 }
 
@@ -44,7 +44,7 @@ export async function generateBlogMetadata(): Promise<Metadata> {
   // Fallback metadata for blog
   return {
     ...defaultMetadataFallback,
-    title: "Blog | Academic Insights & Education Research | Dr. Ngozi Blessing Umoru",
-    description: "Explore academic insights, education research, teaching methodologies, and scholarly perspectives from Dr. Ngozi Blessing Umoru - PhD researcher and Academic English Tutor.",
+    title: "Blog | Academic Insights & Education Research | Ngozi Blessing Umoru (PhD)",
+    description: "Explore academic insights, education research, teaching methodologies, and scholarly perspectives from Ngozi Blessing Umoru (PhD)- PhD researcher and Academic English Tutor.",
   }
 }

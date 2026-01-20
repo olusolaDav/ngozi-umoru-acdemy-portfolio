@@ -8,7 +8,7 @@ import type { SiteProfile } from "./site-types"
 export const defaultProfile: SiteProfile = {
   // Core identity
   fullName: "Ngozi Blessing Umoru",
-  displayName: "Dr. Ngozi Blessing Umoru",
+  displayName: "Ngozi Blessing Umoru (PhD)",
   credentials: "B.Ed, MA, MA Edu, PhD",
   title: "Academic English Tutor & Lecturer",
   
