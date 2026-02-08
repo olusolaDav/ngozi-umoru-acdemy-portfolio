@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { verifySession } from "@/lib/auth"
 import { getDb } from "@/lib/mongodb"
 import { ObjectId } from "mongodb"
+import { uploadFileToCloudinary } from "@/lib/cloudinary-upload"
 
 function parseCookies(cookieHeader: string | null) {
   if (!cookieHeader) return {}
@@ -41,35 +42,15 @@ export async function POST(req: Request) {
       }, { status: 400 })
     }
 
-    // Upload file to Cloudinary via the unified upload API
-    const uploadFormData = new FormData()
-    uploadFormData.append("file", file)
-    uploadFormData.append("folder", "resources")
-    // Don't set public_id - let Cloudinary use the original filename with extension
-    // This is critical for raw files (documents) to be downloadable
-
-    const uploadResponse = await fetch(`${process.env.APP_URL || "http://localhost:3000"}/api/upload/file`, {
-      method: "POST",
-      body: uploadFormData,
-      headers: {
-        cookie: cookieHeader || ""
-      }
+    // Upload file to Cloudinary directly (no HTTP self-fetch)
+    const uploadData = await uploadFileToCloudinary(file, {
+      folder: "resources",
+      role: (payload as any).role,
     })
-
-    if (!uploadResponse.ok) {
-      const uploadError = await uploadResponse.json().catch(() => ({ error: "Upload failed" }))
-      console.error("[ADMIN_RESOURCE_UPLOAD] Upload error:", uploadError)
-      throw new Error(uploadError.error || "Failed to upload file")
-    }
-
-    const uploadData = await uploadResponse.json()
     
-    if (!uploadData.data?.url) {
+    if (!uploadData.url) {
       throw new Error("Invalid upload response - missing file URL")
     }
-    
-    const fileUrl = uploadData.data.url
-    const filePublicId = uploadData.data.publicId
 
     // Save resource metadata to database
     const db = await getDb()
@@ -81,13 +62,13 @@ export async function POST(req: Request) {
       category,
       targetAudience,
       file: {
-        url: fileUrl,
-        publicId: filePublicId,
+        url: uploadData.url,
+        publicId: uploadData.publicId,
         originalName: file.name,
-        size: uploadData.data.bytes,
-        format: uploadData.data.format,
-        resourceType: uploadData.data.resourceType,
-        thumbnail: uploadData.data.thumbnail || null
+        size: uploadData.bytes,
+        format: uploadData.format,
+        resourceType: uploadData.resourceType,
+        thumbnail: uploadData.thumbnail || null
       },
       uploadedBy: (payload as any).userId,
       uploadedAt: new Date(),
