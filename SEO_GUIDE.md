@@ -1,7 +1,7 @@
 # SEO Optimization Guide - Academic Portfolio Website
 
 ## Overview
-This document outlines the comprehensive SEO implementation for Ngozi Blessing Umoru (PhD)'s academic portfolio website, optimized for UK Academic searches.
+This document outlines the comprehensive SEO implementation for Dr. Ngozi Blessing Umoru's academic portfolio website, optimized for UK Academic searches.
 
 ## Target Keywords
 ### Primary Keywords
@@ -98,7 +98,7 @@ NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
 ### 4. Metadata Optimization
 
 #### Homepage (`/app/page.tsx`)
-**Title:** "Ngozi Blessing Umoru (PhD)| Academic English Lecturer & EAP Tutor UK | Education PhD"
+**Title:** "Dr. Ngozi Blessing Umoru | Academic English Lecturer & EAP Tutor UK | Education PhD"
 
 **Description:** Award-winning Academic English Lecturer and EAP/ESL Tutor based in the UK. PhD in Education & Pedagogy. Specialising in Academic Writing, English for Academic Purposes, and Foundation-level teaching across FE/HE institutions.
 
@@ -111,7 +111,7 @@ NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
 - Robots: index, follow
 
 #### Blog Listing (`/app/blog/page.tsx`)
-**Title:** "Academic Blog | Education Research & Teaching Insights UK | Ngozi Blessing Umoru (PhD)"
+**Title:** "Academic Blog | Education Research & Teaching Insights UK | Dr. Ngozi Blessing Umoru"
 
 **Description:** Expert insights on Academic English, EAP teaching methodologies, higher education pedagogy, and scholarly research.
 
@@ -122,7 +122,7 @@ NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
 
 #### Individual Blog Posts (`/app/blog/[slug]/page.tsx`)
 **Dynamic Metadata:**
-- Title: `{Post Title} | Ngozi Blessing Umoru (PhD)- Academic Blog UK`
+- Title: `{Post Title} | Dr. Ngozi Blessing Umoru - Academic Blog UK`
 - Description: Post excerpt with UK branding
 - Keywords: Post tags + default academic keywords
 - OpenGraph type: article
@@ -137,7 +137,7 @@ NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
 - Publishing dates
 
 #### Resources Page (`/app/resources/layout.tsx`)
-**Title:** "Academic Resources | Teaching Materials & Educational Resources UK | Ngozi Blessing Umoru (PhD)"
+**Title:** "Academic Resources | Teaching Materials & Educational Resources UK | Dr. Ngozi Blessing Umoru"
 
 **Description:** Access free academic resources, teaching materials, worksheets, curriculum guides, and lesson plans for Academic English, EAP/ESL, and Foundation-level courses.
 
@@ -147,7 +147,7 @@ NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
 - FE/HE teaching materials focus
 
 #### Contact Page (`/app/contact/layout.tsx`)
-**Title:** "Contact | Get in Touch with Ngozi Blessing Umoru (PhD)| Academic Collaboration UK"
+**Title:** "Contact | Get in Touch with Dr. Ngozi Blessing Umoru | Academic Collaboration UK"
 
 **Description:** Contact for academic collaborations, research inquiries, teaching opportunities, speaking engagements, or EAP/ESL consultations.
 
@@ -166,7 +166,7 @@ NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
 {
   "@context": "https://schema.org",
   "@type": "Person",
-  "name": "Ngozi Blessing Umoru (PhD)",
+  "name": "Dr. Ngozi Blessing Umoru",
   "jobTitle": "Academic English Lecturer",
   "description": "Award-winning Academic English Lecturer and EAP/ESL Tutor",
   "url": "https://ngoziumoru.info",
@@ -200,7 +200,7 @@ NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
 {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "name": "Ngozi Blessing Umoru (PhD)- Academic Portfolio",
+  "name": "Dr. Ngozi Blessing Umoru - Academic Portfolio",
   "url": "https://ngoziumoru.info",
   "description": "Academic portfolio showcasing expertise in Academic English, EAP/ESL teaching, and higher education pedagogy",
   "inLanguage": "en-GB",
@@ -228,12 +228,12 @@ NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
   "dateModified": "{ISO Date}",
   "author": {
     "@type": "Person",
-    "name": "Ngozi Blessing Umoru (PhD)",
+    "name": "Dr. Ngozi Blessing Umoru",
     "url": "https://ngoziumoru.info"
   },
   "publisher": {
     "@type": "Person",
-    "name": "Ngozi Blessing Umoru (PhD)"
+    "name": "Dr. Ngozi Blessing Umoru"
   },
   "keywords": "{Post Tags}",
   "inLanguage": "en-GB",

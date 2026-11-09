@@ -46,7 +46,7 @@ export async function sendEmail(opts: EmailOptions) {
   try {
     // Use Ethereal's test email when using the fallback transporter
     const fromEmail = etherealTestAccount ? etherealTestAccount.user : (process.env.EMAIL_FROM || 'hello@ngoziumoru.info')
-    const fromName = 'Ngozi Umoru'
+    const fromName = 'Dr. Ngozi Blessing Umoru'
     const from = `"${fromName}" <${fromEmail}>`
     const info = await t.sendMail({ from, to: opts.to, subject: opts.subject, text: opts.text, html: opts.html })
     // log preview url when using ethereal
@@ -78,12 +78,12 @@ export function inviteEmailTemplate({ name, email, defaultPassword, inviteLink }
 
 export function otpEmailTemplate({ code }: { code: string }) {
   return {
-    subject: 'Your Verification Code - Ngozi Umoru',
+    subject: 'Your Verification Code - Dr. Ngozi Blessing Umoru',
     text: `Your verification code is: ${code}\n\nThis code will expire in 10 minutes.\n\nIf you did not request this code, please ignore this email.`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="text-align: center; margin-bottom: 30px;">
-          <h1 style="color: #00afef; margin: 0;">Ngozi Umoru</h1>
+          <h1 style="color: #00afef; margin: 0;">Dr. Ngozi Blessing Umoru</h1>
         </div>
         <div style="background: #f9fafb; border-radius: 12px; padding: 30px; text-align: center;">
           <h2 style="color: #1f2937; margin-top: 0;">Verify Your Email</h2>
@@ -96,7 +96,7 @@ export function otpEmailTemplate({ code }: { code: string }) {
           <p style="color: #9ca3af; font-size: 12px;">If you did not request this verification code, you can safely ignore this email. Your account remains secure.</p>
         </div>
         <div style="text-align: center; margin-top: 20px;">
-          <p style="color: #9ca3af; font-size: 12px;">© ${new Date().getFullYear()} Ngozi Umoru. All rights reserved.</p>
+          <p style="color: #9ca3af; font-size: 12px;">© ${new Date().getFullYear()} Dr. Ngozi Blessing Umoru. All rights reserved.</p>
         </div>
       </div>
     `
@@ -105,12 +105,12 @@ export function otpEmailTemplate({ code }: { code: string }) {
 
 export function passwordResetEmailTemplate({ code, name }: { code: string; name: string }) {
   return {
-    subject: 'Password Reset Code - Ngozi Umoru',
-    text: `Hello ${name},\n\nYou have requested to reset your password. Your verification code is: ${code}\n\nThis code will expire in 10 minutes.\n\nIf you did not request this password reset, please ignore this email or contact support if you have concerns.\n\nBest regards,\nNgozi Umoru`,
+    subject: 'Password Reset Code - Dr. Ngozi Blessing Umoru',
+    text: `Hello ${name},\n\nYou have requested to reset your password. Your verification code is: ${code}\n\nThis code will expire in 10 minutes.\n\nIf you did not request this password reset, please ignore this email or contact support if you have concerns.\n\nBest regards,\nDr. Ngozi Blessing Umoru`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="text-align: center; margin-bottom: 30px;">
-          <h1 style="color: #00afef; margin: 0;">Ngozi Umoru</h1>
+          <h1 style="color: #00afef; margin: 0;">Dr. Ngozi Blessing Umoru</h1>
         </div>
         <div style="background: #f9fafb; border-radius: 12px; padding: 30px; text-align: center;">
           <h2 style="color: #1f2937; margin-top: 0;">Password Reset Request</h2>
@@ -124,7 +124,7 @@ export function passwordResetEmailTemplate({ code, name }: { code: string; name:
           <p style="color: #9ca3af; font-size: 12px;">If you did not request this password reset, please ignore this email or contact support if you have concerns.</p>
         </div>
         <div style="text-align: center; margin-top: 20px;">
-          <p style="color: #9ca3af; font-size: 12px;">© ${new Date().getFullYear()} Ngozi Umoru. All rights reserved.</p>
+          <p style="color: #9ca3af; font-size: 12px;">© ${new Date().getFullYear()} Dr. Ngozi Blessing Umoru. All rights reserved.</p>
         </div>
       </div>
     `

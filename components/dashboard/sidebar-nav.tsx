@@ -176,7 +176,7 @@ export function SidebarNav({ role, isCollapsed = false, onToggleCollapse }: Side
                       <AvatarImage src="/ngozi-icon.png" />
                     
                   </Avatar>
-                  <p>Ngozi B. Umoru</p>
+                  <p>Dr. Ngozi Blessing Umoru</p>
             
                     </Link>
          

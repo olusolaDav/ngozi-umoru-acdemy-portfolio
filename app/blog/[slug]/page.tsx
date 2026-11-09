@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: BlogDetailPageProps): Promise
 
   if (!post) {
     return { 
-      title: "Post Not Found |Ngozi Umoru Blog",
+      title: "Post Not Found | Dr. Ngozi Blessing Umoru Blog",
       description: "The requested blog post could not be found.",
     }
   }
@@ -35,12 +35,12 @@ export async function generateMetadata({ params }: BlogDetailPageProps): Promise
   const modifiedTime = post.updatedAt || post.createdAt
 
   return {
-    title: `${post.title} | Ngozi Blessing Umoru (PhD)- Academic Blog UK`,
-    description: post.excerpt || `Expert insights on ${post.title} from Ngozi Blessing Umoru (PhD), Award-winning Academic English Lecturer and PhD researcher in the UK. Read evidence-based teaching strategies and scholarly research.`,
+    title: `${post.title} | Dr. Ngozi Blessing Umoru - Academic Blog UK`,
+    description: post.excerpt || `Expert insights on ${post.title} from Dr. Ngozi Blessing Umoru, Award-winning Academic English Lecturer and PhD researcher in the UK. Read evidence-based teaching strategies and scholarly research.`,
     keywords: post.tags || ["academic english", "eap teaching", "higher education uk", "pedagogy research", "teaching methodologies"],
-    authors: [{ name: post.authorName || "Ngozi Blessing Umoru (PhD)", url: "https://ngoziumoru.info" }],
-    creator: post.authorName || "Ngozi Blessing Umoru (PhD)",
-    publisher: "Ngozi Blessing Umoru (PhD)",
+    authors: [{ name: post.authorName || "Dr. Ngozi Blessing Umoru", url: "https://ngoziumoru.info" }],
+    creator: post.authorName || "Dr. Ngozi Blessing Umoru",
+    publisher: "Dr. Ngozi Blessing Umoru",
     alternates: {
       canonical: postUrl,
     },
@@ -59,7 +59,7 @@ export async function generateMetadata({ params }: BlogDetailPageProps): Promise
       type: "article",
       locale: "en_GB",
       url: postUrl,
-      siteName: "Ngozi Blessing Umoru (PhD)- Academic Portfolio",
+      siteName: "Dr. Ngozi Blessing Umoru - Academic Portfolio",
       title: post.title,
       description: post.excerpt || `Expert insights on ${post.title} from an award-winning UK-based Academic English Lecturer and PhD researcher.`,
       images: [
@@ -72,13 +72,13 @@ export async function generateMetadata({ params }: BlogDetailPageProps): Promise
       ],
       publishedTime: new Date(publishedTime).toISOString(),
       modifiedTime: new Date(modifiedTime).toISOString(),
-      authors: [post.authorName || "Ngozi Blessing Umoru (PhD)"],
+      authors: [post.authorName || "Dr. Ngozi Blessing Umoru"],
       tags: post.tags || [],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
-      description: post.excerpt || `Expert insights on ${post.title} from Ngozi Blessing Umoru (PhD).`,
+      description: post.excerpt || `Expert insights on ${post.title} from Dr. Ngozi Blessing Umoru.`,
       images: [thumbnailUrl],
     },
     other: {

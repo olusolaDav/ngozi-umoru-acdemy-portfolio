@@ -11,7 +11,7 @@
 All public pages now have comprehensive UK-focused metadata:
 
 - ✅ **Homepage** (`/app/page.tsx`)
-  - Title: "Ngozi Blessing Umoru (PhD)| Academic English Lecturer & EAP Tutor UK | Education PhD"
+  - Title: "Dr. Ngozi Blessing Umoru | Academic English Lecturer & EAP Tutor UK | Education PhD"
   - 30+ UK-specific keywords
   - Full OpenGraph and Twitter Card support
   - Canonical URLs

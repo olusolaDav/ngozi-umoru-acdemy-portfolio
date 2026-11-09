@@ -1,5 +1,5 @@
 // ============================================================================
-// Default Profile Data - Ngozi Blessing Umoru
+// Default Profile Data - Dr. Ngozi Blessing Umoru
 // Academic Portfolio Profile Configuration
 // ============================================================================
 
@@ -7,8 +7,8 @@ import type { SiteProfile } from "./site-types"
 
 export const defaultProfile: SiteProfile = {
   // Core identity
-  fullName: "Ngozi Blessing Umoru",
-  displayName: "Ngozi Blessing Umoru (PhD)",
+  fullName: "Dr. Ngozi Blessing Umoru",
+  displayName: "Dr. Ngozi Blessing Umoru",
   credentials: "B.Ed, MA, MA Edu, PhD",
   title: "Academic English Tutor & Lecturer",
   

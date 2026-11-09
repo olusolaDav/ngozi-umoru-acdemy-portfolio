@@ -180,12 +180,18 @@ export function HomeContent() {
     return <HomeLoadingSpinner />
   }
 
+  const hero = siteContent.hero || {}
+  const heroName = hero.name?.trim() || ""
+  const displayHeroName = /^(?:dr\.?\s*)?ngozi(?:\s+b\.)?(?:\s+blessing)?\s+umoru(?:\s+\(phd\))?$/i.test(heroName)
+    ? "Dr. Ngozi Blessing Umoru"
+    : hero.name
+
   return (
     <div className="min-h-screen">
       <Navigation />
 
       {/* Hero Section */}
-      <HeroSection {...(siteContent.hero || {})} />
+      <HeroSection {...hero} name={displayHeroName} />
 
       {/* About Section */}
       <AboutSection {...(siteContent.about || {})} />

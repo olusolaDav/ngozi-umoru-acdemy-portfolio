@@ -1,7 +1,7 @@
 export const homeData = {
   hero: {
     badge: "Academic Portfolio",
-    name: "Ngozi Blessing Umoru (PhD)",
+    name: "Dr. Ngozi Blessing Umoru",
     credentials: "B.Ed, MA, MA Edu, PhD",
     description:
       "Dynamic and student-centred Lecturer and Academic English Tutor with extensive experience teaching Academic English, EAP/ESL, Humanities, and Foundation-level courses across UK FE/HE settings.",

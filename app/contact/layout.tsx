@@ -2,8 +2,8 @@ import type { Metadata } from "next"
 
 // Optimized metadata for contact page
 export const metadata: Metadata = {
-  title: "Contact | Get in Touch with Ngozi Blessing Umoru (PhD)| Academic Collaboration UK",
-  description: "Contact Ngozi Blessing Umoru (PhD)for academic collaborations, research inquiries, teaching opportunities, speaking engagements, or EAP/ESL consultations. Based in the UK, available for FE/HE institutions and educational initiatives.",
+  title: "Contact | Get in Touch with Dr. Ngozi Blessing Umoru | Academic Collaboration UK",
+  description: "Contact Dr. Ngozi Blessing Umoru for academic collaborations, research inquiries, teaching opportunities, speaking engagements, or EAP/ESL consultations. Based in the UK, available for FE/HE institutions and educational initiatives.",
   keywords: [
     // Primary contact keywords
     "contact academic lecturer uk",
@@ -31,17 +31,17 @@ export const metadata: Metadata = {
     "contact dr ngozi umoru",
     "ngozi umoru consultation"
   ].join(", "),
-  authors: [{ name: "Ngozi Blessing Umoru (PhD)", url: "https://ngoziumoru.info" }],
-  creator: "Ngozi Blessing Umoru (PhD)",
-  publisher: "Ngozi Blessing Umoru (PhD)",
+  authors: [{ name: "Dr. Ngozi Blessing Umoru", url: "https://ngoziumoru.info" }],
+  creator: "Dr. Ngozi Blessing Umoru",
+  publisher: "Dr. Ngozi Blessing Umoru",
   alternates: {
     canonical: "https://ngoziumoru.info/contact",
   },
   openGraph: {
-    title: "Contact | Get in Touch with Ngozi Blessing Umoru (PhD)",
+    title: "Contact | Get in Touch with Dr. Ngozi Blessing Umoru",
     description: "Contact for academic collaborations, research inquiries, teaching opportunities, or EAP/ESL consultations. Available for UK FE/HE institutions.",
     url: "https://ngoziumoru.info/contact",
-    siteName: "Ngozi Blessing Umoru (PhD)- Academic Portfolio",
+    siteName: "Dr. Ngozi Blessing Umoru - Academic Portfolio",
     type: "website",
     locale: "en_GB",
     images: [
@@ -49,13 +49,13 @@ export const metadata: Metadata = {
         url: "https://ngoziumoru.info/og-image-contact.jpg",
         width: 1200,
         height: 630,
-        alt: "Contact Ngozi Blessing Umoru (PhD)",
+        alt: "Contact Dr. Ngozi Blessing Umoru",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Contact | Ngozi Blessing Umoru (PhD)",
+    title: "Contact | Dr. Ngozi Blessing Umoru",
     description: "Get in touch for academic collaborations, research inquiries, or teaching opportunities.",
     images: ["https://ngoziumoru.info/og-image-contact.jpg"],
   },

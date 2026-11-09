@@ -1,4 +1,4 @@
-# Academic Portfolio Website - Ngozi Blessing Umoru (PhD)
+# Academic Portfolio Website - Dr. Ngozi Blessing Umoru
 
 A comprehensive Next.js 15 academic portfolio website featuring blog, resources, and contact management with full SEO optimization for UK academic searches.
 
@@ -350,7 +350,7 @@ Private and proprietary. All rights reserved.
 
 ## 👤 Author
 
-**Ngozi Blessing Umoru (PhD)**
+**Dr. Ngozi Blessing Umoru**
 - Website: [ngoziumoru.info](https://ngoziumoru.info)
 - Email: [Contact via website](https://ngoziumoru.info/contact)
 

@@ -2,8 +2,8 @@ import type { Metadata } from "next"
 
 // Optimized metadata for resources page
 export const metadata: Metadata = {
-  title: "Academic Resources | Teaching Materials & Educational Resources UK | Ngozi Blessing Umoru (PhD)",
-  description: "Access free academic resources, teaching materials, worksheets, curriculum guides, and lesson plans for Academic English, EAP/ESL, and Foundation-level courses. Curated by Ngozi Blessing Umoru (PhD), experienced UK FE/HE lecturer with expertise in student-centred pedagogy.",
+  title: "Academic Resources | Teaching Materials & Educational Resources UK | Dr. Ngozi Blessing Umoru",
+  description: "Access free academic resources, teaching materials, worksheets, curriculum guides, and lesson plans for Academic English, EAP/ESL, and Foundation-level courses. Curated by Dr. Ngozi Blessing Umoru, experienced UK FE/HE lecturer with expertise in student-centred pedagogy.",
   keywords: [
     // Primary resource keywords
     "academic resources uk",
@@ -30,9 +30,9 @@ export const metadata: Metadata = {
     "ngozi umoru resources",
     "education phd materials"
   ].join(", "),
-  authors: [{ name: "Ngozi Blessing Umoru (PhD)", url: "https://ngoziumoru.info" }],
-  creator: "Ngozi Blessing Umoru (PhD)",
-  publisher: "Ngozi Blessing Umoru (PhD)",
+  authors: [{ name: "Dr. Ngozi Blessing Umoru", url: "https://ngoziumoru.info" }],
+  creator: "Dr. Ngozi Blessing Umoru",
+  publisher: "Dr. Ngozi Blessing Umoru",
   alternates: {
     canonical: "https://ngoziumoru.info/resources",
   },
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     title: "Academic Resources | Teaching Materials & Educational Resources UK",
     description: "Access free academic resources, teaching materials, and worksheets for Academic English, EAP/ESL, and Foundation courses. Curated by an experienced UK FE/HE lecturer.",
     url: "https://ngoziumoru.info/resources",
-    siteName: "Ngozi Blessing Umoru (PhD)- Academic Portfolio",
+    siteName: "Dr. Ngozi Blessing Umoru - Academic Portfolio",
     type: "website",
     locale: "en_GB",
     images: [
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
         url: "https://ngoziumoru.info/og-image-resources.jpg",
         width: 1200,
         height: 630,
-        alt: "Academic Resources by Ngozi Blessing Umoru (PhD)",
+        alt: "Academic Resources by Dr. Ngozi Blessing Umoru",
       },
     ],
   },

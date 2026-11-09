@@ -1,5 +1,5 @@
 // ============================================================================
-// Default Footer Data - Ngozi Blessing Umoru
+// Default Footer Data - Dr. Ngozi Blessing Umoru
 // Academic Portfolio Footer Configuration
 // ============================================================================
 
@@ -8,7 +8,7 @@ import type { FooterContent } from "./site-types"
 export const defaultFooter: FooterContent = {
   // About column
   about: {
-    name: "Ngozi Blessing Umoru (PhD)",
+    name: "Dr. Ngozi Blessing Umoru",
     description: "Dynamic and student-centred Lecturer and Academic English Tutor with extensive experience in UK FE/HE settings.",
     profileImage: "/Ngozi Umoru.png",
   },
@@ -89,7 +89,7 @@ export const defaultFooter: FooterContent = {
   
   // Copyright
   copyright: {
-    text: "Ngozi Blessing Umoru (PhD). All rights reserved.",
+    text: "Dr. Ngozi Blessing Umoru. All rights reserved.",
     year: new Date().getFullYear(),
   },
 }

@@ -23,7 +23,7 @@ export function Navigation() {
                               <AvatarImage src="/ngozi-icon.png" />
                              
                           </Avatar>
-                          <p>Ngozi B. Umoru</p>
+                          <p>Dr. Ngozi Blessing Umoru</p>
                     
                             </Link>
 

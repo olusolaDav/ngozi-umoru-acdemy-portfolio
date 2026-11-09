@@ -147,25 +147,25 @@ export function generateStructuredData(siteMetadata: SiteMetadata) {
 
 // Default metadata fallback
 export const defaultMetadataFallback: Metadata = {
-  title: "Ngozi Blessing Umoru (PhD)| Academic Portfolio",
+  title: "Dr. Ngozi Blessing Umoru | Academic Portfolio",
   description: "Dynamic and student-centred Lecturer and Academic English Tutor with extensive experience teaching Academic English, EAP/ESL, Humanities, and Foundation-level courses across UK FE/HE settings.",
   keywords: "academic english tutor uk, eap tutor, higher education lecturer, ngozi umoru",
-  authors: [{ name: "Ngozi Blessing Umoru (PhD)" }],
-  creator: "Ngozi Blessing Umoru (PhD)",
-  publisher: "Ngozi Blessing Umoru (PhD)",
+  authors: [{ name: "Dr. Ngozi Blessing Umoru" }],
+  creator: "Dr. Ngozi Blessing Umoru",
+  publisher: "Dr. Ngozi Blessing Umoru",
   
   openGraph: {
-    title: "Ngozi Blessing Umoru (PhD)| Academic English Tutor & Lecturer",
+    title: "Dr. Ngozi Blessing Umoru | Academic English Tutor & Lecturer",
     description: "PhD researcher and Academic English Tutor with extensive UK FE/HE teaching experience.",
     url: "https://ngoziumoru.com",
-    siteName: "Ngozi Blessing Umoru (PhD)| Academic Portfolio",
+    siteName: "Dr. Ngozi Blessing Umoru | Academic Portfolio",
     locale: "en_GB",
     type: "website",
   },
   
   twitter: {
     card: "summary_large_image",
-    title: "Ngozi Blessing Umoru (PhD)| Academic English Tutor & Lecturer",
+    title: "Dr. Ngozi Blessing Umoru | Academic English Tutor & Lecturer",
     description: "PhD researcher and Academic English Tutor with extensive UK FE/HE teaching experience.",
   },
   
