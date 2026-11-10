@@ -3,7 +3,7 @@
 import React from "react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { ExternalLink, Trash2, Calendar, HardDrive, Download, Eye } from "lucide-react"
+import { ExternalLink, Trash2, Calendar, HardDrive, Download, Eye, Pencil } from "lucide-react"
 import { getFileTypeInfo, formatFileSize } from "@/lib/file-icons"
 
 // Resource categories for academic portfolio
@@ -40,6 +40,7 @@ interface ResourceCardProps {
   selectMode?: boolean
   onSelect?: (id: string, checked: boolean) => void
   onView?: () => void
+  onEdit?: (id: string) => void
   onDelete?: (id: string) => void
   uploadedDate?: string
 }
@@ -54,6 +55,7 @@ export function ResourceCard({
   selectMode = false,
   onSelect,
   onView,
+  onEdit,
   onDelete,
   uploadedDate,
 }: ResourceCardProps) {
@@ -159,12 +161,24 @@ export function ResourceCard({
           {React.createElement(buttonIcon, { className: "mr-1.5 h-3.5 w-3.5" })}
           {buttonText}
         </Button>
+        {onEdit && (
+          <Button
+            onClick={() => onEdit(id)}
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30"
+            aria-label={`Edit ${title}`}
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
+        )}
         {onDelete && (
           <Button
             onClick={() => onDelete(id)}
             variant="ghost"
             size="icon"
             className="h-8 w-8 text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
+            aria-label={`Delete ${title}`}
           >
             <Trash2 className="h-4 w-4" />
           </Button>

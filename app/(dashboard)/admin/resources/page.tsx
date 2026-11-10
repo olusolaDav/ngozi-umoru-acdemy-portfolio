@@ -12,6 +12,8 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -102,6 +104,9 @@ export default function AdminResourcesPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [editingResource, setEditingResource] = useState<Resource | null>(null)
+  const [editForm, setEditForm] = useState({ title: "", description: "", category: "worksheets" })
+  const [isSavingEdit, setIsSavingEdit] = useState(false)
 
   // Fetch resources
   const fetchResources = useCallback(async () => {
@@ -172,6 +177,54 @@ export default function AdminResourcesPage() {
     } else {
       toast.error("File URL not available")
     }
+  }
+
+  const handleOpenEdit = (id: string) => {
+    const resource = resources.find((item) => item._id === id)
+    if (!resource) return
+
+    setEditingResource(resource)
+    setEditForm({
+      title: resource.title,
+      description: resource.description || "",
+      category: resource.category,
+    })
+  }
+
+  const handleSaveEdit = async () => {
+    if (!editingResource || !editForm.title.trim() || isSavingEdit) return
+
+    setIsSavingEdit(true)
+    try {
+      const response = await fetch(`/api/admin/resources/${editingResource._id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: editForm.title.trim(),
+          description: editForm.description,
+          category: editForm.category,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: "Failed to update resource" }))
+        throw new Error(errorData.error || "Failed to update resource")
+      }
+
+      toast.success("Resource updated successfully")
+      setEditingResource(null)
+      await fetchResources()
+    } catch (error) {
+      console.error("Error updating resource:", error)
+      toast.error(error instanceof Error ? error.message : "Failed to update resource")
+    } finally {
+      setIsSavingEdit(false)
+    }
+  }
+
+  const handleDeleteResource = (id: string) => {
+    setSelectedIds([id])
+    setDeleteDialogOpen(true)
   }
 
   // Delete selected resources
@@ -616,6 +669,8 @@ export default function AdminResourcesPage() {
                     selectMode={selectMode}
                     onSelect={handleSelect}
                     onView={() => handleOpenDocument(resource)}
+                    onEdit={handleOpenEdit}
+                    onDelete={handleDeleteResource}
                     uploadedDate={new Date(resource.uploadedAt).toLocaleDateString()}
                   />
                 ))}
@@ -637,6 +692,8 @@ export default function AdminResourcesPage() {
                     selectMode={selectMode}
                     onSelect={handleSelect}
                     onView={() => handleOpenDocument(resource)}
+                    onEdit={handleOpenEdit}
+                    onDelete={handleDeleteResource}
                     uploadedDate={new Date(resource.uploadedAt).toLocaleDateString()}
                   />
                 ))}
@@ -672,6 +729,65 @@ export default function AdminResourcesPage() {
             )}
           </>
         )}
+
+        <Dialog open={!!editingResource} onOpenChange={(open) => !open && setEditingResource(null)}>
+          <DialogContent className="sm:max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Edit Resource</DialogTitle>
+              <DialogDescription>Update the resource title, description, or category.</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="resource-title" className="text-sm font-medium">Title</label>
+                <Input
+                  id="resource-title"
+                  value={editForm.title}
+                  onChange={(e) => setEditForm((prev) => ({ ...prev, title: e.target.value }))}
+                  disabled={isSavingEdit}
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="resource-description" className="text-sm font-medium">Description</label>
+                <Textarea
+                  id="resource-description"
+                  value={editForm.description}
+                  onChange={(e) => setEditForm((prev) => ({ ...prev, description: e.target.value }))}
+                  rows={4}
+                  disabled={isSavingEdit}
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="resource-category" className="text-sm font-medium">Category</label>
+                <Select
+                  value={editForm.category}
+                  onValueChange={(category) => setEditForm((prev) => ({ ...prev, category }))}
+                  disabled={isSavingEdit}
+                >
+                  <SelectTrigger id="resource-category">
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {RESOURCE_CATEGORIES.map((category) => (
+                      <SelectItem key={category.value} value={category.value}>{category.label}</SelectItem>
+                    ))}
+                    {!RESOURCE_CATEGORIES.some((category) => category.value === editForm.category) && editForm.category && (
+                      <SelectItem value={editForm.category}>{editForm.category}</SelectItem>
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setEditingResource(null)} disabled={isSavingEdit}>
+                Cancel
+              </Button>
+              <Button onClick={handleSaveEdit} disabled={!editForm.title.trim() || isSavingEdit} className="bg-blue-600 hover:bg-blue-700 text-white">
+                {isSavingEdit && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save Changes
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Delete Confirmation Dialog */}
         <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

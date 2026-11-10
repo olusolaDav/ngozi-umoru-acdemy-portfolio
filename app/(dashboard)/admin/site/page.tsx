@@ -374,6 +374,38 @@ export default function AdminSitePage() {
     })
   }
 
+  const updateExperienceResponsibility = (experienceIndex: number, responsibilityIndex: number, value: string) => {
+    setExperience(prev => {
+      const newItems = [...prev.items]
+      const responsibilities = [...(newItems[experienceIndex].responsibilities || [])]
+      responsibilities[responsibilityIndex] = value
+      newItems[experienceIndex] = { ...newItems[experienceIndex], responsibilities }
+      return { ...prev, items: newItems }
+    })
+  }
+
+  const addExperienceResponsibility = (index: number) => {
+    setExperience(prev => {
+      const newItems = [...prev.items]
+      newItems[index] = {
+        ...newItems[index],
+        responsibilities: [...(newItems[index].responsibilities || []), ""],
+      }
+      return { ...prev, items: newItems }
+    })
+  }
+
+  const removeExperienceResponsibility = (experienceIndex: number, responsibilityIndex: number) => {
+    setExperience(prev => {
+      const newItems = [...prev.items]
+      newItems[experienceIndex] = {
+        ...newItems[experienceIndex],
+        responsibilities: (newItems[experienceIndex].responsibilities || []).filter((_, i) => i !== responsibilityIndex),
+      }
+      return { ...prev, items: newItems }
+    })
+  }
+
   const removeExperience = (index: number) => {
     setExperience({ ...experience, items: experience.items.filter((_, i) => i !== index) })
   }
@@ -793,14 +825,31 @@ export default function AdminSitePage() {
                             allowPresent={true}
                           />
                         </div>
-                        <div className="space-y-1 md:col-span-2">
-                          <Label className="text-xs">Responsibilities (comma-separated)</Label>
-                          <Textarea
-                            value={item.responsibilities.join(", ")}
-                            onChange={(e) => updateExperience(index, "responsibilities", e.target.value.split(", "))}
-                            placeholder="Responsibility 1, Responsibility 2"
-                            rows={2}
-                          />
+                        <div className="space-y-3 md:col-span-2">
+                          <div className="flex items-center justify-between">
+                            <Label className="text-xs">Responsibilities</Label>
+                            <Button variant="outline" size="sm" onClick={() => addExperienceResponsibility(index)}>
+                              <Plus className="h-4 w-4 mr-1" /> Add Responsibility
+                            </Button>
+                          </div>
+                          {(item.responsibilities || []).map((responsibility, responsibilityIndex) => (
+                            <div key={responsibilityIndex} className="flex gap-2">
+                              <Input
+                                value={responsibility}
+                                onChange={(e) => updateExperienceResponsibility(index, responsibilityIndex, e.target.value)}
+                                placeholder={`Responsibility ${responsibilityIndex + 1}`}
+                              />
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => removeExperienceResponsibility(index, responsibilityIndex)}
+                                className="shrink-0 text-red-500 hover:text-red-700"
+                                aria-label={`Remove responsibility ${responsibilityIndex + 1}`}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     </div>
