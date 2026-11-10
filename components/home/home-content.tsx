@@ -182,16 +182,18 @@ export function HomeContent() {
 
   const hero = siteContent.hero || {}
   const heroName = hero.name?.trim() || ""
-  const displayHeroName = /^(?:dr\.?\s*)?ngozi(?:\s+b\.)?(?:\s+blessing)?\s+umoru(?:\s+\(phd\))?$/i.test(heroName)
-    ? "Dr. Ngozi Blessing Umoru"
-    : hero.name
+  const heroNameMatch = heroName.match(/^(?:dr\.?\s*)?ngozi(?:\s+b\.)?(?:\s+blessing)?\s+umoru(?:\s+\(phd\))?(?:\s*\((.+)\))?$/i)
+  const displayHeroName = heroNameMatch ? "Dr. Ngozi Blessing Umoru" : hero.name
+  const displayCredentials = heroNameMatch?.[1]
+    ? heroNameMatch[1].replace(/\bReviewe\b/i, "Reviewer")
+    : hero.credentials
 
   return (
     <div className="min-h-screen">
       <Navigation />
 
       {/* Hero Section */}
-      <HeroSection {...hero} name={displayHeroName} />
+      <HeroSection {...hero} name={displayHeroName} credentials={displayCredentials} />
 
       {/* About Section */}
       <AboutSection {...(siteContent.about || {})} />

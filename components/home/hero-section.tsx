@@ -19,10 +19,10 @@ export function HeroSection(props: HeroProps) {
             <div className="inline-block px-4 py-1.5 bg-primary/10 text-primary text-sm font-medium rounded-full mb-6">
               {badge}
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-balance leading-tight">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-balance leading-tight">
               {name}
             </h1>
-            <p className="text-xl text-muted-foreground mb-4 leading-relaxed">{credentials}</p>
+            <p className="text-lg md:text-xl font-semibold text-primary mb-6 leading-snug">{credentials}</p>
             <p className="text-lg text-muted-foreground mb-8 leading-relaxed">{description}</p>
             <div className="flex flex-wrap gap-4">
               <Link href="/contact">
