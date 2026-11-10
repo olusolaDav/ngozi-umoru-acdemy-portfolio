@@ -175,11 +175,3 @@ export function formatPeriod(startDate?: string, endDate?: string): string {
   return `${start} - ${end}`
 }
 
-// Helper function to parse date string for sorting
-export function parseDateForSort(dateStr?: string): number {
-  if (!dateStr) return 0
-  if (dateStr === "present") return Date.now()
-  
-  const [year, month] = dateStr.split("-")
-  return new Date(parseInt(year, 10), parseInt(month, 10) - 1).getTime()
-}

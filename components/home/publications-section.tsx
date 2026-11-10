@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { FileText, ExternalLink } from "lucide-react"
+import { parseDateForSort } from "@/lib/date-utils"
 
 interface PublicationProfile {
   label: string
@@ -26,6 +27,8 @@ interface PublicationsProps {
 
 export function PublicationsSection(props: PublicationsProps) {
   const { section, title = "", profiles = [], items = [] } = props
+  const sortedItems = [...items].sort((a, b) => parseDateForSort(b.date) - parseDateForSort(a.date))
+
   return (
     <section id="publications" className="py-20 px-4">
       <div className="container mx-auto max-w-6xl">
@@ -68,7 +71,7 @@ export function PublicationsSection(props: PublicationsProps) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {items.map((publication, index) => (
+          {sortedItems.map((publication, index) => (
             <Card key={index} className="hover:shadow-lg transition-shadow">
               <CardContent className="pt-6">
                 <div className="flex items-start justify-between gap-4">

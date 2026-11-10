@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card"
-import { parseDateForSort } from "@/components/ui/month-year-picker"
+import { parseDateForSort, parseDateRangeStartForSort } from "@/lib/date-utils"
 
 interface ExperienceItem {
   position: string
@@ -21,9 +21,9 @@ export function ExperienceSection(props: ExperienceProps) {
 
   // Sort items by end date (most recent first), then by start date
   const sortedItems = [...items].sort((a, b) => {
-    // Parse end dates - "present" should be treated as most recent
-    const endDateA = parseDateForSort(a.endDate || a.startDate)
-    const endDateB = parseDateForSort(b.endDate || b.startDate)
+    // Parse end dates or the formatted period when explicit dates are unavailable.
+    const endDateA = parseDateForSort(a.endDate || a.period || a.startDate)
+    const endDateB = parseDateForSort(b.endDate || b.period || b.startDate)
     
     // Sort descending (most recent first)
     if (endDateB !== endDateA) {
@@ -31,8 +31,8 @@ export function ExperienceSection(props: ExperienceProps) {
     }
     
     // If end dates are equal, sort by start date (more recent start first)
-    const startDateA = parseDateForSort(a.startDate)
-    const startDateB = parseDateForSort(b.startDate)
+    const startDateA = parseDateForSort(a.startDate) || parseDateRangeStartForSort(a.period)
+    const startDateB = parseDateForSort(b.startDate) || parseDateRangeStartForSort(b.period)
     return startDateB - startDateA
   })
   return (

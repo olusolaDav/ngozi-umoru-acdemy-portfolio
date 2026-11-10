@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { GraduationCap } from "lucide-react"
+import { parseDateForSort } from "@/lib/date-utils"
 
 interface EducationItem {
   degree: string
@@ -15,6 +16,8 @@ interface EducationProps {
 
 export function EducationSection(props: EducationProps) {
   const { section, title, items = [] } = props
+  const sortedItems = [...items].sort((a, b) => parseDateForSort(b.year) - parseDateForSort(a.year))
+
   return (
     <section id="education" className="py-20 px-4 bg-muted/30">
       <div className="container mx-auto max-w-6xl">
@@ -26,7 +29,7 @@ export function EducationSection(props: EducationProps) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {items.map((item, index) => (
+          {sortedItems.map((item, index) => (
             <Card key={index}>
               <CardContent className="pt-6">
                 <div className="flex items-start gap-4">
