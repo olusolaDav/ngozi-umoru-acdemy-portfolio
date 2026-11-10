@@ -217,6 +217,11 @@ export default function AdminSitePage() {
         body: JSON.stringify({ section, data }),
       })
       if (res.ok) {
+        try {
+          localStorage.setItem("site_content_updated_at", Date.now().toString())
+        } catch {
+          // Public pages will still fetch fresh data when opened or reloaded.
+        }
         toast.success(`${section.charAt(0).toUpperCase() + section.slice(1)} section updated successfully`)
       } else {
         toast.error("Failed to update content")

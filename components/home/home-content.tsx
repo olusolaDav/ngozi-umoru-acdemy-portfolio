@@ -72,7 +72,7 @@ interface SiteContent {
 
 const CACHE_KEY = "site_content_cache"
 const CACHE_TIMESTAMP_KEY = "site_content_cache_timestamp"
-const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
+const SITE_CONTENT_UPDATED_KEY = "site_content_updated_at"
 
 function getCachedContent(): SiteContent | null {
   if (typeof window === "undefined") return null
@@ -105,25 +105,9 @@ function setCachedContent(content: SiteContent): void {
   }
 }
 
-function isCacheStale(): boolean {
-  if (typeof window === "undefined") return true
-  
-  try {
-    const timestamp = localStorage.getItem(CACHE_TIMESTAMP_KEY)
-    if (timestamp) {
-      const age = Date.now() - parseInt(timestamp, 10)
-      return age > CACHE_DURATION
-    }
-  } catch {
-    // Ignore errors
-  }
-  return true
-}
-
 export function HomeContent() {
   const [siteContent, setSiteContent] = useState<SiteContent | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [hasInitialLoad, setHasInitialLoad] = useState(false)
 
   const fetchSiteContent = useCallback(async (showLoading = true) => {
     try {
@@ -154,20 +138,23 @@ export function HomeContent() {
     const cached = getCachedContent()
     
     if (cached) {
-      // Use cached content immediately
+      // Show cached content immediately while refreshing from the server.
       setSiteContent(cached)
       setIsLoading(false)
-      setHasInitialLoad(true)
-      
-      // If cache is stale, refresh in background
-      if (isCacheStale()) {
+    }
+
+    // Always check the server on page entry so updates appear immediately,
+    // regardless of the age of this browser's cached content.
+    fetchSiteContent(!cached)
+
+    // Refresh a public page that is already open in another tab after an admin save.
+    const handleSiteContentUpdate = (event: StorageEvent) => {
+      if (event.key === SITE_CONTENT_UPDATED_KEY) {
         fetchSiteContent(false)
       }
-    } else {
-      // No cache, fetch fresh data
-      fetchSiteContent(true)
-      setHasInitialLoad(true)
     }
+    window.addEventListener("storage", handleSiteContentUpdate)
+    return () => window.removeEventListener("storage", handleSiteContentUpdate)
   }, [fetchSiteContent])
 
   // Show loading spinner only on initial load without cache
