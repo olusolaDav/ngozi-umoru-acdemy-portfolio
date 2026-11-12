@@ -58,8 +58,8 @@
       initialContent?: string
       postId?: string
       onSave?: (data: { title: string; slug: string; content: string; thumbnail?: string | null }) => void | Promise<void>
-      onPreview?: () => void
-      onPublish?: () => void
+      onPreview?: () => void | Promise<void>
+      onPublish?: () => void | Promise<void>
     }
 
     export function BlogEditor({
@@ -198,18 +198,8 @@
         })
       }, [])
 
-      // Debug: Log initial props on mount
-      useEffect(() => {
-        console.log("BlogEditor mounted with:", { initialTitle, initialContent: initialContent?.substring(0, 100) })
-      }, [])
-
       // Initialize content from props on mount
       useEffect(() => {
-        console.log("Init effect running:", { 
-          hasInitialized: hasInitialized.current, 
-          initialTitle, 
-          initialContent: initialContent?.substring(0, 100) 
-        })
         // Only initialize once when component mounts with values
         if (!hasInitialized.current && (initialTitle || initialContent)) {
           if (initialTitle) {
@@ -220,7 +210,6 @@
             setContent(initialContent)
           }
           hasInitialized.current = true
-          console.log("BlogEditor initialized with content")
         }
       }, [initialTitle, initialContent])
 
@@ -253,8 +242,11 @@
       useEffect(() => {
         // Add paste event listener
         const editorContainer = document.querySelector('.blog-editor .ql-editor')
+        const pasteHandler = (event: Event) => {
+          void handlePaste(event as ClipboardEvent)
+        }
         if (editorContainer) {
-          editorContainer.addEventListener('paste', handlePaste as EventListener)
+          editorContainer.addEventListener('paste', pasteHandler)
         }
 
         // Add tooltips after a short delay to ensure toolbar is rendered
@@ -262,32 +254,11 @@
 
         return () => {
           if (editorContainer) {
-            editorContainer.removeEventListener('paste', handlePaste as EventListener)
+            editorContainer.removeEventListener('paste', pasteHandler)
           }
           clearTimeout(tooltipTimer)
         }
       }, [handlePaste, addToolbarTooltips])
-
-      // Auto-save draft every 5 seconds
-      useEffect(() => {
-        if (!title && !content) return
-        // Don't auto-save if content hasn't been initialized yet
-        if (!hasInitialized.current && initialContent) return
-
-        const timer = setTimeout(() => {
-          setStatus("saving")
-          const thumbnail = getFirstImage()
-          // Simulate save - in production, call API
-          setTimeout(() => {
-            setStatus("saved")
-            onSave?.({ title, slug, content, thumbnail })
-            // Reset status after 2 seconds
-            setTimeout(() => setStatus("idle"), 200000)
-          }, 80000)
-        }, 50000)
-
-        return () => clearTimeout(timer)
-      }, [title, content, slug, onSave, getFirstImage, initialContent])
 
       // Image upload handler - triggers hidden file input
       const imageHandler = useCallback(() => {
@@ -415,46 +386,48 @@
         return errors
       }, [title, slug, content])
 
-      // Handle save as draft with validation
-      const handleSaveDraft = async () => {
+      const saveCurrentDraft = useCallback(async () => {
         const errors = validateBlogData()
-        
         if (errors.length > 0) {
           toast({
-            title: "Cannot Save Draft",
+            title: "Cannot Save Post",
             description: errors.join(". "),
             variant: "destructive",
           })
-          return
+          return false
         }
 
         setStatus("saving")
         const thumbnail = getFirstImage()
-        console.log("Saving draft with:", { title, slug, content: content?.substring(0, 100), thumbnail })
-        
-        // Call onSave immediately without setTimeout delay
         try {
+          if (!onSave) throw new Error("Saving is not available right now.")
           await onSave?.({ title, slug, content, thumbnail })
           setStatus("saved")
-          console.log("Draft saved successfully")
-          toast({
-            title: "Draft Saved",
-            description: "Your blog post has been saved as a draft.",
-          })
           setTimeout(() => setStatus("idle"), 2000)
+          return true
         } catch (error) {
-          console.error("Error saving draft:", error)
           setStatus("idle")
           toast({
             title: "Save Failed",
-            description: "Failed to save draft. Please try again.",
+            description: error instanceof Error ? error.message : "Failed to save post. Please try again.",
             variant: "destructive",
           })
+          return false
+        }
+      }, [validateBlogData, getFirstImage, onSave, title, slug, content])
+
+      const handleSaveDraft = async () => {
+        if (await saveCurrentDraft()) {
+          toast({ title: "Draft Saved", description: "Your blog post has been saved as a draft." })
         }
       }
 
+      const handlePreviewClick = async () => {
+        if (await saveCurrentDraft()) await onPreview?.()
+      }
+
       // Handle publish with validation
-      const handlePublishClick = useCallback(() => {
+      const handlePublishClick = useCallback(async () => {
         const errors = validateBlogData()
         
         // Also check for thumbnail (first image in content)
@@ -472,9 +445,8 @@
           return
         }
         
-        // If validation passes, call onPublish
-        onPublish?.()
-      }, [validateBlogData, getFirstImage, onPublish])
+        if (await saveCurrentDraft()) await onPublish?.()
+      }, [validateBlogData, getFirstImage, saveCurrentDraft, onPublish])
 
       // Get status display
       const getStatusDisplay = () => {
@@ -516,7 +488,7 @@
                 <Save className="h-4 w-4" />
                 Save Draft
               </Button>
-              <Button variant="ghost" onClick={onPreview} className="gap-2">
+              <Button variant="ghost" onClick={handlePreviewClick} className="gap-2">
                 <Eye className="h-4 w-4" />
                 Preview
               </Button>

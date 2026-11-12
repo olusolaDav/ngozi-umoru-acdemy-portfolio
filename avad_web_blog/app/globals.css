@@ -1,0 +1,1028 @@
+@import "tailwindcss";
+
+/* All navigational and actionable controls should communicate that they are clickable. */
+a,
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --avad-cream: #fff3e6;
+  --avad-purple: #311048;
+  --avad-gold: #d99d58;
+  --avad-bg: #fff3e6;
+  --avad-bg-soft: #fff8ef;
+  --avad-bg-elevated: #ffffff;
+  --avad-text-strong: #1f1536;
+  --avad-text: #2d2542;
+  --avad-text-soft: #665c79;
+  --avad-border: #dfd5e8;
+  --avad-ring: #8f6ab7;
+  --editor-text-ink: #111827;
+  --editor-text-charcoal: #374151;
+  --editor-text-slate: #6b7280;
+  --editor-text-deep-red: #991b1b;
+  --editor-text-umber: #9a3412;
+  --editor-text-olive: #92400e;
+  --editor-text-forest: #065f46;
+  --editor-text-royal: #1d4ed8;
+  --editor-text-indigo: #312e81;
+  --editor-text-plum: #7e22ce;
+  --editor-text-rose: #be185d;
+}
+
+.dark {
+  --avad-bg: #12071e;
+  --avad-bg-soft: #1b0d2b;
+  --avad-bg-elevated: #241338;
+  --avad-text-strong: #ffffff;
+  --avad-text: #f2ecfb;
+  --avad-text-soft: #c7bbdb;
+  --avad-border: #3b2755;
+  --avad-ring: #d99d58;
+  --editor-text-ink: #f8fafc;
+  --editor-text-charcoal: #e5e7eb;
+  --editor-text-slate: #cbd5e1;
+  --editor-text-deep-red: #fecaca;
+  --editor-text-umber: #fed7aa;
+  --editor-text-olive: #fde68a;
+  --editor-text-forest: #bbf7d0;
+  --editor-text-royal: #bfdbfe;
+  --editor-text-indigo: #c7d2fe;
+  --editor-text-plum: #e9d5ff;
+  --editor-text-rose: #fbcfe8;
+}
+
+@theme inline {
+  --color-background: var(--avad-bg);
+  --color-foreground: var(--avad-text);
+  --color-card: var(--avad-bg-elevated);
+  --color-muted: var(--avad-bg-soft);
+  --color-muted-foreground: var(--avad-text-soft);
+  --color-border: var(--avad-border);
+  --color-ring: var(--avad-ring);
+  --font-sans: var(--font-body);
+  --font-serif: var(--font-heading);
+}
+
+body {
+  background: var(--avad-bg);
+  color: var(--avad-text);
+  font-family: var(--font-body), sans-serif;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+html {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+svg,
+video,
+iframe {
+  max-width: 100%;
+}
+
+.legal-content p + p {
+  margin-top: 1rem;
+}
+
+.legal-content ul,
+.legal-content ol {
+  margin: 1rem 0;
+  padding-left: 1.35rem;
+}
+
+.legal-content ul {
+  list-style: disc;
+}
+
+.legal-content li + li {
+  margin-top: 0.5rem;
+}
+
+.legal-content strong {
+  color: var(--avad-text-strong);
+  font-weight: 700;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading), serif;
+}
+
+.blog-article-content {
+  color: #312547;
+  font-size: 1.06rem;
+  line-height: 1.85;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.devotional-article-content {
+  color: #312547;
+  font-size: 1.06rem;
+  line-height: 1.9;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.community-article-content {
+  color: #312547;
+  font-size: 1.06rem;
+  line-height: 1.9;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.blog-article-content > * + * {
+  margin-top: 1rem;
+}
+
+.devotional-article-content > * + * {
+  margin-top: 1rem;
+}
+
+.community-article-content > * + * {
+  margin-top: 1rem;
+}
+
+.blog-article-content * {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.devotional-article-content * {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.community-article-content * {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.blog-article-content h1,
+.blog-article-content h2,
+.blog-article-content h3,
+.blog-article-content h4,
+.blog-article-content h5,
+.blog-article-content h6 {
+  color: #25193a;
+  line-height: 1.25;
+  margin-top: 2.2rem;
+  margin-bottom: 0.75rem;
+}
+
+.devotional-article-content h1,
+.devotional-article-content h2,
+.devotional-article-content h3,
+.devotional-article-content h4,
+.devotional-article-content h5,
+.devotional-article-content h6 {
+  color: #25193a;
+  line-height: 1.25;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.community-article-content h1,
+.community-article-content h2,
+.community-article-content h3,
+.community-article-content h4,
+.community-article-content h5,
+.community-article-content h6 {
+  color: #25193a;
+  line-height: 1.25;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.blog-article-content h2 {
+  font-size: clamp(1.45rem, 1.9vw, 2rem);
+  border-bottom: 1px solid #e8ddee;
+  padding-bottom: 0.4rem;
+}
+
+.devotional-article-content h2 {
+  font-size: clamp(1.45rem, 1.9vw, 2rem);
+  border-bottom: 1px solid #e8ddee;
+  padding-bottom: 0.4rem;
+}
+
+.community-article-content h2 {
+  font-size: clamp(1.45rem, 1.9vw, 2rem);
+  border-bottom: 1px solid #e8ddee;
+  padding-bottom: 0.4rem;
+}
+
+.blog-article-content h3 {
+  font-size: clamp(1.22rem, 1.5vw, 1.5rem);
+}
+
+.devotional-article-content h3 {
+  font-size: clamp(1.22rem, 1.5vw, 1.5rem);
+}
+
+.community-article-content h3 {
+  font-size: clamp(1.22rem, 1.5vw, 1.5rem);
+}
+
+.blog-article-content p {
+  margin-bottom: 1rem;
+}
+
+.devotional-article-content p,
+.devotional-article-content li,
+.devotional-article-content blockquote,
+.devotional-article-content div {
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+.community-article-content p,
+.community-article-content li,
+.community-article-content blockquote,
+.community-article-content div {
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+.devotional-article-content p {
+  margin-bottom: 1.05rem;
+}
+
+.community-article-content p {
+  margin-bottom: 1.05rem;
+}
+
+.blog-article-content ul,
+.blog-article-content ol {
+  margin: 1rem 0;
+  padding-left: 1.45rem;
+}
+
+.devotional-article-content ul,
+.devotional-article-content ol {
+  margin: 1rem 0;
+  padding-left: 1.45rem;
+}
+
+.community-article-content ul,
+.community-article-content ol {
+  margin: 1rem 0;
+  padding-left: 1.45rem;
+}
+
+.blog-article-content li + li {
+  margin-top: 0.35rem;
+}
+
+.devotional-article-content li + li {
+  margin-top: 0.35rem;
+}
+
+.community-article-content li + li {
+  margin-top: 0.35rem;
+}
+
+.blog-article-content blockquote {
+  border-left: 4px solid #d39a52;
+  background: #fff8f0;
+  color: #4c3d64;
+  margin: 1.4rem 0;
+  padding: 0.7rem 1rem;
+  border-radius: 0.45rem;
+}
+
+.devotional-article-content blockquote {
+  border-left: 4px solid #d39a52;
+  background: #fff8f0;
+  color: #4c3d64;
+  margin: 1.4rem 0;
+  padding: 0.7rem 1rem;
+  border-radius: 0.45rem;
+}
+
+.community-article-content blockquote {
+  border-left: 4px solid #d39a52;
+  background: #fff8f0;
+  color: #4c3d64;
+  margin: 1.4rem 0;
+  padding: 0.7rem 1rem;
+  border-radius: 0.45rem;
+}
+
+.blog-article-content blockquote + blockquote,
+.devotional-article-content blockquote + blockquote,
+.community-article-content blockquote + blockquote {
+  margin-top: -1rem;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  padding-top: 0.2rem;
+}
+
+.blog-article-content blockquote:has(+ blockquote),
+.devotional-article-content blockquote:has(+ blockquote),
+.community-article-content blockquote:has(+ blockquote) {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-bottom: 0;
+  padding-bottom: 0.2rem;
+}
+
+.devotional-article-content br + br {
+  display: block;
+  content: "";
+  margin-top: 0.8rem;
+}
+
+.community-article-content br + br {
+  display: block;
+  content: "";
+  margin-top: 0.8rem;
+}
+
+.blog-article-content a {
+  color: #351456;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.devotional-article-content a {
+  color: #351456;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.community-article-content a {
+  color: #351456;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.blog-article-content .ql-inline-quote,
+.devotional-article-content .ql-inline-quote,
+.community-article-content .ql-inline-quote {
+  background: color-mix(in srgb, var(--avad-bg-soft) 82%, transparent 18%);
+  border-left: 3px solid var(--avad-gold);
+  border-radius: 0.45rem;
+  box-decoration-break: clone;
+  color: inherit;
+  padding: 0.08rem 0.45rem;
+}
+
+.blog-article-content img,
+.blog-article-content video,
+.blog-article-content iframe {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border-radius: 1rem;
+  margin: 1.1rem auto;
+}
+
+.devotional-article-content img,
+.devotional-article-content video,
+.devotional-article-content iframe {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border-radius: 1rem;
+  margin: 1.1rem auto;
+}
+
+.community-article-content img,
+.community-article-content video,
+.community-article-content iframe {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border-radius: 1rem;
+  margin: 1.1rem auto;
+}
+
+.blog-article-content iframe[src*="youtube"],
+.blog-article-content iframe[src*="vimeo"] {
+  aspect-ratio: 16 / 9;
+}
+
+.devotional-article-content iframe[src*="youtube"],
+.devotional-article-content iframe[src*="vimeo"] {
+  aspect-ratio: 16 / 9;
+}
+
+.community-article-content iframe[src*="youtube"],
+.community-article-content iframe[src*="vimeo"] {
+  aspect-ratio: 16 / 9;
+}
+
+.blog-article-content pre {
+  overflow-x: auto;
+  border-radius: 0.85rem;
+  background: #1f1531;
+  color: #efe6fb;
+  padding: 0.9rem 1rem;
+  font-size: 0.9rem;
+}
+
+.devotional-article-content pre {
+  overflow-x: auto;
+  border-radius: 0.85rem;
+  background: #1f1531;
+  color: #efe6fb;
+  padding: 0.9rem 1rem;
+  font-size: 0.9rem;
+}
+
+.community-article-content pre {
+  overflow-x: auto;
+  border-radius: 0.85rem;
+  background: #1f1531;
+  color: #efe6fb;
+  padding: 0.9rem 1rem;
+  font-size: 0.9rem;
+}
+
+.blog-article-content code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.devotional-article-content code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.community-article-content code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.blog-article-content :not(pre) > code {
+  background: #f2e8fb;
+  color: #3c225f;
+  border-radius: 0.3rem;
+  padding: 0.12rem 0.3rem;
+}
+
+.devotional-article-content :not(pre) > code {
+  background: #f2e8fb;
+  color: #3c225f;
+  border-radius: 0.3rem;
+  padding: 0.12rem 0.3rem;
+}
+
+.community-article-content :not(pre) > code {
+  background: #f2e8fb;
+  color: #3c225f;
+  border-radius: 0.3rem;
+  padding: 0.12rem 0.3rem;
+}
+
+.blog-article-content table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 0.8rem;
+  border: 1px solid #e6deee;
+  margin: 1.25rem 0;
+  display: block;
+  overflow-x: auto;
+  white-space: normal;
+}
+
+.devotional-article-content table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 0.8rem;
+  border: 1px solid #e6deee;
+  margin: 1.25rem 0;
+  display: block;
+  overflow-x: auto;
+  white-space: normal;
+}
+
+.community-article-content table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 0.8rem;
+  border: 1px solid #e6deee;
+  margin: 1.25rem 0;
+  display: block;
+  overflow-x: auto;
+  white-space: normal;
+}
+
+.blog-article-content thead {
+  background: #f7f2fb;
+}
+
+.devotional-article-content thead {
+  background: #f7f2fb;
+}
+
+.community-article-content thead {
+  background: #f7f2fb;
+}
+
+.blog-article-content th,
+.blog-article-content td {
+  border-bottom: 1px solid #ede5f4;
+  padding: 0.68rem 0.82rem;
+  text-align: left;
+  font-size: 0.92rem;
+}
+
+.devotional-article-content th,
+.devotional-article-content td {
+  border-bottom: 1px solid #ede5f4;
+  padding: 0.68rem 0.82rem;
+  text-align: left;
+  font-size: 0.92rem;
+}
+
+.community-article-content th,
+.community-article-content td {
+  border-bottom: 1px solid #ede5f4;
+  padding: 0.68rem 0.82rem;
+  text-align: left;
+  font-size: 0.92rem;
+}
+
+.blog-article-content th {
+  font-weight: 700;
+  color: #2b1b41;
+}
+
+.devotional-article-content th {
+  font-weight: 700;
+  color: #2b1b41;
+}
+
+.community-article-content th {
+  font-weight: 700;
+  color: #2b1b41;
+}
+
+.blog-article-content tr:last-child td {
+  border-bottom: 0;
+}
+
+.devotional-article-content tr:last-child td {
+  border-bottom: 0;
+}
+
+.community-article-content tr:last-child td {
+  border-bottom: 0;
+}
+
+@media (max-width: 640px) {
+  .blog-article-content th,
+  .blog-article-content td,
+  .devotional-article-content th,
+  .devotional-article-content td,
+  .community-article-content th,
+  .community-article-content td {
+    padding: 0.5rem 0.6rem;
+    font-size: 0.82rem;
+  }
+
+  .blog-article-content pre,
+  .devotional-article-content pre,
+  .community-article-content pre {
+    max-width: 100%;
+    font-size: 0.78rem;
+  }
+}
+
+@keyframes scripture-banner-slide {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.scripture-banner-track {
+  display: flex;
+  align-items: center;
+  max-width: none;
+  width: max-content;
+  white-space: nowrap;
+  animation: scripture-banner-slide 55s linear infinite;
+}
+
+.scripture-banner-item {
+  flex: 0 0 auto;
+  padding-right: 3rem;
+}
+
+.dark body {
+  background: var(--avad-bg);
+  color: var(--avad-text);
+}
+
+.dark main,
+.dark section,
+.dark article,
+.dark aside {
+  color: var(--avad-text);
+}
+
+.dark .bg-white,
+.dark .hover\:bg-white:hover,
+.dark [class*="bg-[#f"],
+.dark [class*="bg-[#e"],
+.dark [class*="bg-[#d"] {
+  background-color: var(--avad-bg-elevated) !important;
+}
+
+.dark [class*="border-[#"],
+.dark .border-white {
+  border-color: var(--avad-border) !important;
+}
+
+.dark [class*="text-[#"],
+.dark .text-black {
+  color: var(--avad-text) !important;
+}
+
+.dark [class*="text-[var(--avad-gold)]"] {
+  color: var(--avad-gold) !important;
+}
+
+.dark [class*="text-[#cc2222"] {
+  color: #ff9e9e !important;
+}
+
+.dark input:not([type="checkbox"]):not([type="radio"]),
+.dark textarea,
+.dark select {
+  background: var(--avad-bg-soft) !important;
+  color: var(--avad-text) !important;
+  border-color: var(--avad-border) !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: var(--avad-text-soft) !important;
+}
+
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus {
+  outline: none;
+  border-color: var(--avad-ring) !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--avad-ring) 35%, transparent) !important;
+}
+
+.dark .blog-article-content,
+.dark .devotional-article-content,
+.dark .community-article-content {
+  color: var(--avad-text);
+}
+
+.dark .blog-article-content h1,
+.dark .blog-article-content h2,
+.dark .blog-article-content h3,
+.dark .blog-article-content h4,
+.dark .blog-article-content h5,
+.dark .blog-article-content h6,
+.dark .devotional-article-content h1,
+.dark .devotional-article-content h2,
+.dark .devotional-article-content h3,
+.dark .devotional-article-content h4,
+.dark .devotional-article-content h5,
+.dark .devotional-article-content h6,
+.dark .community-article-content h1,
+.dark .community-article-content h2,
+.dark .community-article-content h3,
+.dark .community-article-content h4,
+.dark .community-article-content h5,
+.dark .community-article-content h6 {
+  color: var(--avad-text-strong);
+}
+
+.dark .blog-article-content h2,
+.dark .devotional-article-content h2,
+.dark .community-article-content h2 {
+  border-bottom-color: var(--avad-border);
+}
+
+.dark .blog-article-content blockquote,
+.dark .devotional-article-content blockquote,
+.dark .community-article-content blockquote {
+  border-left-color: var(--avad-gold);
+  background: var(--avad-bg-elevated);
+  color: var(--avad-text);
+}
+
+.dark .blog-article-content a,
+.dark .devotional-article-content a,
+.dark .community-article-content a {
+  color: var(--avad-gold);
+}
+
+.dark .blog-article-content :not(pre) > code,
+.dark .devotional-article-content :not(pre) > code,
+.dark .community-article-content :not(pre) > code {
+  background: var(--avad-bg-soft);
+  color: var(--avad-text);
+}
+
+.dark .blog-article-content table,
+.dark .devotional-article-content table,
+.dark .community-article-content table,
+.dark .blog-article-content th,
+.dark .blog-article-content td,
+.dark .devotional-article-content th,
+.dark .devotional-article-content td,
+.dark .community-article-content th,
+.dark .community-article-content td {
+  border-color: var(--avad-border);
+}
+
+.dark .blog-article-content thead,
+.dark .devotional-article-content thead,
+.dark .community-article-content thead {
+  background: var(--avad-bg-soft);
+}
+
+/* Dashboard-wide dark hardening for legacy utility colors */
+.dark .dashboard-theme-scope .bg-white,
+.dark .dashboard-theme-scope .hover\:bg-white:hover,
+.dark .dashboard-theme-scope [class*="bg-[#fff"],
+.dark .dashboard-theme-scope [class*="bg-[#fdf"],
+.dark .dashboard-theme-scope [class*="bg-[#f8"],
+.dark .dashboard-theme-scope [class*="bg-[#f2"],
+.dark .dashboard-theme-scope [class*="bg-[#efe"],
+.dark .dashboard-theme-scope [class*="bg-[#ece"] {
+  background-color: var(--avad-bg-elevated) !important;
+}
+
+.dark .dashboard-theme-scope [class*="border-[#"],
+.dark .dashboard-theme-scope .border-white {
+  border-color: var(--avad-border) !important;
+}
+
+.dark .dashboard-theme-scope [class*="text-[#"],
+.dark .dashboard-theme-scope .text-black {
+  color: var(--avad-text) !important;
+}
+
+.dark .dashboard-theme-scope [class*="text-[#d9a05c"] {
+  color: var(--avad-gold) !important;
+}
+
+.dark .dashboard-theme-scope [class*="text-[#db2222"],
+.dark .dashboard-theme-scope [class*="text-[#9a4127"],
+.dark .dashboard-theme-scope [class*="text-[#8b4d4d"] {
+  color: #ffb4b4 !important;
+}
+
+.dark .dashboard-theme-scope [class*="bg-[#d39a52"],
+.dark .dashboard-theme-scope [class*="bg-[#ca9758"],
+.dark .dashboard-theme-scope [class*="bg-[#c99556"] {
+  background-color: var(--avad-gold) !important;
+}
+
+/* Dashboard rich-text editor theming */
+.dashboard-rich-editor {
+  background: var(--avad-bg-elevated);
+}
+
+.dashboard-rich-editor .ql-toolbar.ql-snow {
+  border: 0;
+  border-bottom: 1px solid var(--avad-border);
+  background: var(--avad-bg-elevated);
+  padding: 10px 12px;
+  position: sticky;
+  top: 74px;
+  z-index: 30;
+}
+
+.dashboard-rich-editor .ql-container.ql-snow {
+  border: 0;
+  font-size: 15px;
+  background: var(--avad-bg-elevated);
+}
+
+.dashboard-rich-editor .ql-editor {
+  min-height: 58vh;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 28px 44px;
+  line-height: 1.75;
+  color: var(--avad-text);
+}
+
+.contact-composer-wrapper {
+  --contact-composer-sticky-offset: 96px;
+}
+
+.dashboard-rich-editor--contact .ql-toolbar.ql-snow {
+  padding: 6px 10px;
+  position: sticky;
+  top: var(--contact-composer-sticky-offset, 92px);
+  z-index: 34;
+  background: var(--avad-bg-elevated);
+  border-bottom: 1px solid color-mix(in srgb, var(--avad-border) 88%, transparent 12%);
+}
+
+.dashboard-rich-editor--contact .ql-container.ql-snow {
+  min-height: 220px;
+}
+
+.dashboard-rich-editor--contact .ql-editor {
+  min-height: 220px;
+  max-width: none;
+  margin: 0;
+  padding: 14px 16px 20px;
+  line-height: 1.65;
+}
+
+.contact-composer-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--avad-bg-soft);
+  padding-bottom: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--avad-border) 88%, transparent 12%);
+}
+
+.dashboard-rich-editor .ql-editor.ql-blank::before {
+  color: var(--avad-text-soft);
+  opacity: 0.9;
+}
+
+.dashboard-rich-editor .ql-editor h1,
+.dashboard-rich-editor .ql-editor h2,
+.dashboard-rich-editor .ql-editor h3,
+.dashboard-rich-editor .ql-editor h4,
+.dashboard-rich-editor .ql-editor h5,
+.dashboard-rich-editor .ql-editor h6 {
+  color: var(--avad-text-strong);
+}
+
+.dashboard-rich-editor .ql-editor a {
+  color: var(--avad-gold);
+}
+
+.dashboard-rich-editor .ql-editor blockquote {
+  border-left-color: var(--avad-gold);
+  color: var(--avad-text-soft);
+  background: var(--avad-bg-soft);
+  border-radius: 0.6rem;
+  padding: 0.6rem 0.9rem;
+  margin: 0.15rem 0;
+}
+
+.dashboard-rich-editor .ql-editor blockquote + blockquote {
+  margin-top: -0.15rem;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  padding-top: 0.2rem;
+}
+
+.dashboard-rich-editor .ql-editor blockquote:has(+ blockquote) {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-bottom: 0;
+  padding-bottom: 0.2rem;
+}
+
+.dashboard-rich-editor .ql-editor .ql-inline-quote {
+  background: color-mix(in srgb, var(--avad-bg-soft) 88%, transparent 12%);
+  border-left: 3px solid var(--avad-gold);
+  border-radius: 0.45rem;
+  box-decoration-break: clone;
+  color: inherit;
+  padding: 0.08rem 0.45rem;
+}
+
+.dashboard-rich-editor .ql-editor pre,
+.dashboard-rich-editor .ql-editor code {
+  background: var(--avad-bg-soft);
+  color: var(--avad-text);
+}
+
+.dashboard-rich-editor .ql-editor :not(pre) > code {
+  background: color-mix(in srgb, var(--avad-bg-soft) 78%, var(--avad-bg-elevated) 22%);
+  border: 1px solid color-mix(in srgb, var(--avad-border) 74%, transparent 26%);
+  border-left: 3px solid var(--avad-gold);
+  border-radius: 0.55rem;
+  color: var(--avad-text-strong);
+  padding: 0.12rem 0.42rem;
+}
+
+.dashboard-rich-editor .ql-editor pre {
+  border: 1px solid color-mix(in srgb, var(--avad-border) 68%, transparent 32%);
+  border-left: 4px solid var(--avad-gold);
+  border-radius: 0.8rem;
+  padding: 0.75rem 0.9rem;
+}
+
+.dashboard-rich-editor .ql-snow .ql-picker.ql-color .ql-picker-item:not([data-value]),
+.dashboard-rich-editor .ql-snow .ql-picker.ql-background .ql-picker-item:not([data-value]) {
+  position: relative;
+  background: color-mix(in srgb, var(--avad-bg-soft) 72%, var(--avad-bg-elevated) 28%);
+  border: 1px solid color-mix(in srgb, var(--avad-border) 80%, transparent 20%);
+  box-sizing: border-box;
+}
+
+.dashboard-rich-editor .ql-snow .ql-picker.ql-color .ql-picker-item:not([data-value])::before,
+.dashboard-rich-editor .ql-snow .ql-picker.ql-background .ql-picker-item:not([data-value])::before {
+  content: "/";
+  color: #dc2626;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.dashboard-rich-editor .ql-snow .ql-picker.ql-color .ql-picker-item:not([data-value])::before,
+.dashboard-rich-editor .ql-snow .ql-picker.ql-background .ql-picker-item:not([data-value])::before {
+  position: absolute;
+  left: 3px;
+  top: 0;
+}
+
+.dashboard-rich-editor .ql-editor img,
+.dashboard-rich-editor .ql-editor video,
+.dashboard-rich-editor .ql-editor iframe {
+  max-width: 100%;
+  border-radius: 0.75rem;
+}
+
+.dashboard-rich-editor .ql-snow .ql-stroke {
+  stroke: var(--avad-text-soft);
+}
+
+.dashboard-rich-editor .ql-snow .ql-fill,
+.dashboard-rich-editor .ql-snow .ql-stroke.ql-fill {
+  fill: var(--avad-text-soft);
+}
+
+.dashboard-rich-editor .ql-snow .ql-picker,
+.dashboard-rich-editor .ql-snow .ql-picker-label,
+.dashboard-rich-editor .ql-snow .ql-picker-item,
+.dashboard-rich-editor .ql-snow .ql-picker-label::before,
+.dashboard-rich-editor .ql-snow .ql-picker-item::before,
+.dashboard-rich-editor .ql-snow .ql-tooltip,
+.dashboard-rich-editor .ql-snow .ql-tooltip input[type="text"] {
+  color: var(--avad-text);
+}
+
+.dashboard-rich-editor .ql-snow .ql-picker-options,
+.dashboard-rich-editor .ql-snow .ql-tooltip {
+  background: var(--avad-bg-elevated);
+  border-color: var(--avad-border);
+}
+
+.dashboard-rich-editor .ql-snow .ql-tooltip a.ql-action,
+.dashboard-rich-editor .ql-snow .ql-tooltip a.ql-remove {
+  color: var(--avad-gold);
+}
+
+.dashboard-rich-editor .ql-toolbar button:hover,
+.dashboard-rich-editor .ql-toolbar button:focus,
+.dashboard-rich-editor .ql-toolbar button.ql-active,
+.dashboard-rich-editor .ql-toolbar .ql-picker-label:hover,
+.dashboard-rich-editor .ql-toolbar .ql-picker-label.ql-active {
+  background: color-mix(in srgb, var(--avad-bg-soft) 85%, transparent);
+  border-radius: 0.35rem;
+}
+
+.dashboard-rich-editor .ql-toolbar button.ql-active .ql-stroke,
+.dashboard-rich-editor .ql-toolbar button:hover .ql-stroke,
+.dashboard-rich-editor .ql-toolbar .ql-picker-label.ql-active .ql-stroke,
+.dashboard-rich-editor .ql-toolbar .ql-picker-label:hover .ql-stroke {
+  stroke: var(--avad-text-strong);
+}
+
+.dashboard-rich-editor .ql-toolbar button.ql-active .ql-fill,
+.dashboard-rich-editor .ql-toolbar button:hover .ql-fill,
+.dashboard-rich-editor .ql-toolbar .ql-picker-label.ql-active .ql-fill,
+.dashboard-rich-editor .ql-toolbar .ql-picker-label:hover .ql-fill {
+  fill: var(--avad-text-strong);
+}
+
+.dark .dashboard-rich-editor .ql-toolbar.ql-snow,
+.dark .dashboard-rich-editor .ql-container.ql-snow {
+  background: var(--avad-bg-elevated);
+}

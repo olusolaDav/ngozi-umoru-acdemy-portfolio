@@ -1,10 +1,7 @@
 "use client"
 
-import Image from "next/image"
 import { ScrollAnimation } from "@/components/ui/scroll-animation"
-import { Heart, Share2, Eye } from "lucide-react"
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { blogContentText, normalizeBlogHtmlForRender } from "@/lib/blog-content"
 
 interface BlogPost {
   _id: string
@@ -35,7 +32,8 @@ interface BlogDetailContentProps {
 }
 
 export function BlogDetailContent({ post }: BlogDetailContentProps) {
- 
+  const content = normalizeBlogHtmlForRender(post.content)
+  const hasContent = Boolean(blogContentText(content))
 
  
   return (
@@ -47,10 +45,13 @@ export function BlogDetailContent({ post }: BlogDetailContentProps) {
         
 
           <ScrollAnimation delay={0.15}>
-            <div 
-              className="prose prose-lg max-w-full break-words dark:prose-invert"
-              dangerouslySetInnerHTML={{ __html: post.content }}
-            />
+            {hasContent ? (
+              <div className="blog-article-content" dangerouslySetInnerHTML={{ __html: content }} />
+            ) : (
+              <p className="rounded-xl border border-border bg-muted/30 p-5 text-muted-foreground">
+                This article is being updated. Please check back soon.
+              </p>
+            )}
           </ScrollAnimation>
         </div>
       </div>

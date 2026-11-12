@@ -1,0 +1,26 @@
+
+> web@0.1.0 lint /home/olusoladav/Documents/Programming/ALOT-CLIENT-PROJECTS/AVAD/apps/web
+> eslint
+
+
+Oops! Something went wrong! :(
+
+ESLint: 9.39.5
+
+Error: Cannot find module 'eslint-module-utils/resolve'
+Require stack:
+- /home/olusoladav/Documents/Programming/ALOT-CLIENT-PROJECTS/AVAD/node_modules/.pnpm/eslint-plugin-import@2.32.0_eslint-import-resolver-typescript@3.10.1_eslint@9.39.5_jiti@2.7.0_/node_modules/eslint-plugin-import/lib/rules/no-unresolved.js
+- /home/olusoladav/Documents/Programming/ALOT-CLIENT-PROJECTS/AVAD/node_modules/.pnpm/eslint-plugin-import@2.32.0_eslint-import-resolver-typescript@3.10.1_eslint@9.39.5_jiti@2.7.0_/node_modules/eslint-plugin-import/lib/index.js
+- /home/olusoladav/Documents/Programming/ALOT-CLIENT-PROJECTS/AVAD/node_modules/.pnpm/eslint-config-next@16.2.12_eslint@9.39.5_jiti@2.7.0__typescript@5.9.3/node_modules/eslint-config-next/dist/index.js
+- /home/olusoladav/Documents/Programming/ALOT-CLIENT-PROJECTS/AVAD/node_modules/.pnpm/eslint-config-next@16.2.12_eslint@9.39.5_jiti@2.7.0__typescript@5.9.3/node_modules/eslint-config-next/dist/core-web-vitals.js
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1401:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22)
+    at Function._load (node:internal/modules/cjs/loader:1211:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (/home/olusoladav/Documents/Programming/ALOT-CLIENT-PROJECTS/AVAD/node_modules/.pnpm/eslint-plugin-import@2.32.0_eslint-import-resolver-typescript@3.10.1_eslint@9.39.5_jiti@2.7.0_/node_modules/eslint-plugin-import/lib/rules/no-unresolved.js:6:16)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+[41m[30m ELIFECYCLE [39m[49m [31mCommand failed with exit code 2.[39m

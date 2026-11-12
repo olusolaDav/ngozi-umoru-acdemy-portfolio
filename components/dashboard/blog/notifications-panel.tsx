@@ -7,7 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { X, Trash2, CheckSquare } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { EmptyState } from "./empty-state"
-import { mockNotifications, type Notification } from "@/lib/blog-data"
+import type { Notification } from "@/lib/blog-data"
 
 interface NotificationsPanelProps {
   open: boolean
@@ -20,7 +20,7 @@ export function NotificationsPanel({ open, onClose }: NotificationsPanelProps) {
   const [activeTab, setActiveTab] = useState<NotificationTab>("all")
   const [selectMode, setSelectMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
-  const [notifications, setNotifications] = useState(mockNotifications)
+  const [notifications, setNotifications] = useState<Notification[]>([])
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 6
 

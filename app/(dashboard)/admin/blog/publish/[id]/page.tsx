@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import { PublishPostForm } from "@/components/dashboard/blog/publish-post-form"
 import { Loader2 } from "lucide-react"
+import { toast } from "@/hooks/use-toast"
 
 interface BlogPost {
   _id: string
@@ -68,12 +69,13 @@ export default function PublishBlogPostPage() {
           tags: data.tags,
         }),
       })
-
-      if (publishRes.ok) {
-        router.push("/admin/blog")
-      }
+      const result = await publishRes.json()
+      if (!publishRes.ok) throw new Error(result.error || "Unable to publish post.")
+      toast({ title: "Post published", description: "Your article is now available on the public blog." })
+      router.push("/admin/blog")
     } catch (error) {
       console.error("Error publishing post:", error)
+      toast({ title: "Unable to publish", description: error instanceof Error ? error.message : "Please try again.", variant: "destructive" })
     } finally {
       setPublishing(false)
     }
@@ -99,12 +101,13 @@ export default function PublishBlogPostPage() {
           scheduledAt: new Date(data.scheduledAt).toISOString(),
         }),
       })
-
-      if (scheduleRes.ok) {
-        router.push("/admin/blog")
-      }
+      const result = await scheduleRes.json()
+      if (!scheduleRes.ok) throw new Error(result.error || "Unable to schedule post.")
+      toast({ title: "Post scheduled", description: "Your article is scheduled for publication." })
+      router.push("/admin/blog")
     } catch (error) {
       console.error("Error scheduling post:", error)
+      toast({ title: "Unable to schedule", description: error instanceof Error ? error.message : "Please try again.", variant: "destructive" })
     } finally {
       setPublishing(false)
     }

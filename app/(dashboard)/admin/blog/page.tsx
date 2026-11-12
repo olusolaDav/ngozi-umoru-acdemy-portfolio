@@ -50,7 +50,7 @@ interface BlogPost {
   authorId?: string
   authorName?: string
   authorAvatar?: string
-  status: "published" | "draft"
+  status: "published" | "draft" | "scheduled"
   tags: string[]
   views: number
   commentsCount: number
@@ -59,10 +59,11 @@ interface BlogPost {
   readTime: number
   createdAt: string
   publishedAt?: string
+  scheduledAt?: string
   updatedAt: string
 }
 
-type BlogTab = "all" | "drafts" | "published"
+type BlogTab = "all" | "drafts" | "published" | "scheduled"
 
 export default function AdminBlogPage() {
   const router = useRouter()
@@ -92,7 +93,7 @@ export default function AdminBlogPage() {
           authorId: p.authorId || "admin",
           authorName: p.authorName || "Admin",
           authorAvatar: p.authorAvatar || "/professional-man-avatar.png",
-          status: p.status === "published" ? "published" : "draft",
+          status: p.status === "published" || p.status === "scheduled" ? p.status : "draft",
           tags: p.tags || [],
           views: p.views || 0,
           commentsCount: p.commentsCount || 0,
@@ -101,6 +102,7 @@ export default function AdminBlogPage() {
           readTime: p.readTime || 5,
           createdAt: p.createdAt || new Date().toISOString(),
           publishedAt: p.publishedAt,
+          scheduledAt: p.scheduledAt,
           updatedAt: p.updatedAt || new Date().toISOString(),
         })))
       }
@@ -129,6 +131,8 @@ export default function AdminBlogPage() {
       result = result.filter((p) => p.status === "draft")
     } else if (activeTab === "published") {
       result = result.filter((p) => p.status === "published")
+    } else if (activeTab === "scheduled") {
+      result = result.filter((p) => p.status === "scheduled")
     }
 
     return result
@@ -137,6 +141,7 @@ export default function AdminBlogPage() {
   const allCount = posts.length
   const draftsCount = posts.filter((p) => p.status === "draft").length
   const publishedCount = posts.filter((p) => p.status === "published").length
+  const scheduledCount = posts.filter((p) => p.status === "scheduled").length
 
   const totalPages = Math.ceil(filteredPosts.length / itemsPerPage)
   const paginatedPosts = filteredPosts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
@@ -226,6 +231,12 @@ export default function AdminBlogPage() {
       color: "bg-yellow-50 dark:bg-yellow-950/30 text-yellow-600 dark:text-yellow-400",
     },
     {
+      title: "Scheduled",
+      value: scheduledCount,
+      icon: Clock,
+      color: "bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400",
+    },
+    {
       title: "Total Views",
       value: posts.reduce((acc, p) => acc + p.views, 0),
       icon: Eye,
@@ -272,7 +283,7 @@ export default function AdminBlogPage() {
       />
 
       <div className="px-6 py-6 space-y-6">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
           {statsCards.map((stat) => {
             const Icon = stat.icon
             return (
@@ -299,6 +310,7 @@ export default function AdminBlogPage() {
               { key: "all", label: "All", count: allCount },
               { key: "published", label: "Published", count: publishedCount },
               { key: "drafts", label: "Drafts", count: draftsCount },
+              { key: "scheduled", label: "Scheduled", count: scheduledCount },
             ].map((tab) => (
               <button
                 key={tab.key}
@@ -368,12 +380,14 @@ export default function AdminBlogPage() {
                     <Badge 
                       className={cn(
                         "text-xs font-medium",
-                        post.status === "published" 
+                        post.status === "published"
                           ? "bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-400"
-                          : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-400"
+                          : post.status === "scheduled"
+                            ? "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-400"
+                            : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-400"
                       )}
                     >
-                      {post.status === "published" ? "Published" : "Draft"}
+                      {post.status === "published" ? "Published" : post.status === "scheduled" ? "Scheduled" : "Draft"}
                     </Badge>
                   </div>
                   <div className="absolute top-3 right-3">
@@ -401,6 +415,17 @@ export default function AdminBlogPage() {
                             <TrendingUp className="mr-2 h-4 w-4" />
                             Publish
                           </DropdownMenuItem>
+                        ) : post.status === "scheduled" ? (
+                          <>
+                            <DropdownMenuItem onClick={() => handlePublish(post)}>
+                              <TrendingUp className="mr-2 h-4 w-4" />
+                              Publish Now
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleUnpublish(post._id)}>
+                              <FileText className="mr-2 h-4 w-4" />
+                              Cancel Schedule
+                            </DropdownMenuItem>
+                          </>
                         ) : (
                           <DropdownMenuItem onClick={() => handleUnpublish(post._id)}>
                             <FileText className="mr-2 h-4 w-4" />
@@ -441,7 +466,7 @@ export default function AdminBlogPage() {
                         {post.readTime}m
                       </span>
                     </div>
-                    <span>{formatDate(post.createdAt)}</span>
+                    <span>{formatDate(post.scheduledAt || post.publishedAt || post.createdAt)}</span>
                   </div>
                   {post.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-3">

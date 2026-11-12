@@ -1,69 +1,49 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { BlogEditor } from "@/components/dashboard/blog/blog-editor"
 
 export default function NewBlogPostPage() {
   const router = useRouter()
   const [postId, setPostId] = useState<string | null>(null)
-  const [isSaving, setIsSaving] = useState(false)
+  const postIdRef = useRef<string | null>(null)
 
   const handleSave = async (data: { title: string; slug: string; content: string; thumbnail?: string | null }) => {
-    setIsSaving(true)
-    try {
-      if (postId) {
-        const res = await fetch(`/api/admin/blog/${postId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            title: data.title,
-            slug: data.slug,
-            content: data.content,
-            thumbnail: data.thumbnail,
-            status: "draft",
-          }),
-        })
-        const result = await res.json()
-        if (result.ok) {
-          console.log("Draft updated:", result.post._id)
-        }
-      } else {
-        const res = await fetch("/api/admin/blog", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            title: data.title,
-            slug: data.slug,
-            content: data.content,
-            thumbnail: data.thumbnail,
-            status: "draft",
-          }),
-        })
-        const result = await res.json()
-        if (result.ok && result.post) {
-          setPostId(result.post._id)
-          console.log("Draft created:", result.post._id)
-        }
-      }
-    } catch (error) {
-      console.error("Error saving draft:", error)
-    } finally {
-      setIsSaving(false)
+    const currentPostId = postIdRef.current
+    const res = await fetch(currentPostId ? `/api/admin/blog/${currentPostId}` : "/api/admin/blog", {
+      method: currentPostId ? "PUT" : "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: data.title,
+        slug: data.slug,
+        content: data.content,
+        thumbnail: data.thumbnail,
+        status: "draft",
+      }),
+    })
+    const result = await res.json()
+    if (!res.ok || !result.ok || !result.post?._id) {
+      throw new Error(result.error || "Unable to save blog post.")
     }
+
+    postIdRef.current = result.post._id
+    setPostId(result.post._id)
   }
 
   const handlePreview = async () => {
-    if (postId) {
-      router.push(`/admin/blog/preview/${postId}`)
+    const currentPostId = postIdRef.current || postId
+    if (currentPostId) {
+      router.push(`/admin/blog/preview/${currentPostId}`)
     } else {
       alert("Please save the post first before previewing.")
     }
   }
 
   const handlePublish = async () => {
-    if (postId) {
-      router.push(`/admin/blog/publish/${postId}`)
+    const currentPostId = postIdRef.current || postId
+    if (currentPostId) {
+      router.push(`/admin/blog/publish/${currentPostId}`)
     } else {
       alert("Please save the post first before publishing.")
     }

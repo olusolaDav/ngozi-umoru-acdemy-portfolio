@@ -5,6 +5,7 @@ import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Clock, Calendar, Heart, Share2, Loader2 } from "lucide-react"
+import { blogContentText, normalizeBlogHtmlForRender } from "@/lib/blog-content"
 
 interface BlogPost {
   _id: string
@@ -85,6 +86,8 @@ export default function PreviewBlogPostPage() {
     )
   }
 
+  const content = normalizeBlogHtmlForRender(post.content)
+
   return (
     <div className="relative min-h-full">
       <div className="fixed left-0 top-20 z-50 rotate-[-45deg] bg-red-500 px-8 py-1 text-sm font-bold text-white shadow-lg">
@@ -136,10 +139,13 @@ export default function PreviewBlogPostPage() {
           />
         </div>
 
-        <div
-          className="prose prose-lg max-w-none dark:prose-invert"
-          dangerouslySetInnerHTML={{ __html: post.content }}
-        />
+        {blogContentText(content) ? (
+          <div className="blog-article-content" dangerouslySetInnerHTML={{ __html: content }} />
+        ) : (
+          <p className="rounded-xl border border-border bg-muted/30 p-5 text-muted-foreground">
+            This post has no readable content yet. Return to the editor and save the article body.
+          </p>
+        )}
 
         <div className="mt-12 border-t border-border pt-8">
           <h2 className="mb-4 text-xl font-semibold">Leave Your Comment</h2>

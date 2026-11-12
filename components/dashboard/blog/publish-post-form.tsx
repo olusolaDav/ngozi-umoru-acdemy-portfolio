@@ -9,10 +9,12 @@ import { Textarea } from "@/components/ui/textarea"
 import { X, ImageIcon, AlertCircle } from "lucide-react"
 import { SectorDropdown } from "./sector-dropdown"
 import type { BlogPost } from "@/lib/blog-data"
+import { blogContentText } from "@/lib/blog-content"
 
 interface PublishPostFormProps {
   post?: BlogPost
-  onPublishNow?: (data: PublishData) => void
+  onPublishNow?: (data: PublishData) => void | Promise<void>
+  onSchedule?: (data: PublishData & { scheduledAt: string }) => void | Promise<void>
   onClose?: () => void
 }
 
@@ -86,7 +88,7 @@ function extractFirstImage(content: string): string | null {
   return imgMatch ? imgMatch[1] : null
 }
 
-export function PublishPostForm({ post, onPublishNow, onClose }: PublishPostFormProps) {
+export function PublishPostForm({ post, onPublishNow, onSchedule, onClose }: PublishPostFormProps) {
   const router = useRouter()
   const maxDescriptionLength = 160
 
@@ -106,6 +108,8 @@ export function PublishPostForm({ post, onPublishNow, onClose }: PublishPostForm
     return autoMetaDescription.substring(0, maxDescriptionLength)
   })
   const [selectedSectors, setSelectedSectors] = useState<string[]>(post?.tags || [])
+  const [mode, setMode] = useState<"publish" | "schedule">("publish")
+  const [scheduledAt, setScheduledAt] = useState("")
 
   // Auto-fill meta description when content changes and field is empty
   useEffect(() => {
@@ -117,8 +121,7 @@ export function PublishPostForm({ post, onPublishNow, onClose }: PublishPostForm
   // Check if content has any text (not just HTML tags/empty paragraphs)
   const hasContent = useMemo(() => {
     if (!post?.content) return false
-    const textContent = post.content.replace(/<[^>]+>/g, "").trim()
-    return textContent.length > 0
+    return blogContentText(post.content).length > 0
   }, [post?.content])
 
   // Validation errors
@@ -140,9 +143,13 @@ export function PublishPostForm({ post, onPublishNow, onClose }: PublishPostForm
     if (!hasContent) {
       errors.push("Blog content cannot be empty")
     }
+
+    if (mode === "schedule" && !scheduledAt) {
+      errors.push("Choose a date and time to schedule this post")
+    }
     
     return errors
-  }, [title, metaDescription, thumbnailUrl, hasContent])
+  }, [title, metaDescription, thumbnailUrl, hasContent, mode, scheduledAt])
 
   const canPublish = validationErrors.length === 0
 
@@ -154,6 +161,11 @@ export function PublishPostForm({ post, onPublishNow, onClose }: PublishPostForm
       metaDescription,
       tags: selectedSectors,
     })
+  }
+
+  const handleSchedule = () => {
+    if (!canPublish || !scheduledAt) return
+    onSchedule?.({ title, metaDescription, tags: selectedSectors, scheduledAt })
   }
 
   return (
@@ -273,12 +285,28 @@ export function PublishPostForm({ post, onPublishNow, onClose }: PublishPostForm
 
             {/* Action Buttons */}
             <div className="flex flex-col gap-3 pt-4">
+              <div className="flex gap-2">
+                <Button type="button" variant={mode === "publish" ? "default" : "outline"} onClick={() => setMode("publish")} className="flex-1">
+                  Publish now
+                </Button>
+                <Button type="button" variant={mode === "schedule" ? "default" : "outline"} onClick={() => setMode("schedule")} className="flex-1">
+                  Schedule
+                </Button>
+              </div>
+              {mode === "schedule" && (
+                <Input
+                  type="datetime-local"
+                  value={scheduledAt}
+                  onChange={(event) => setScheduledAt(event.target.value)}
+                  aria-label="Scheduled publication date and time"
+                />
+              )}
               <Button
-                onClick={handlePublishNow}
+                onClick={mode === "publish" ? handlePublishNow : handleSchedule}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={!canPublish}
               >
-                Publish Now
+                {mode === "publish" ? "Publish Now" : "Schedule Post"}
               </Button>
               <Button
                 variant="outline"

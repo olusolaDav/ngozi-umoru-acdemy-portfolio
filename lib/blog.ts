@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb"
 import { getDb } from "./mongodb"
+import { blogContentText } from "./blog-content"
 
 export type BlogStatus = "published" | "draft" | "scheduled"
 export type CommentStatus = "published" | "pending" | "unpublished"
@@ -46,6 +47,21 @@ export interface CommentRecord {
   updatedAt: string
 }
 
+export class BlogSlugConflictError extends Error {
+  constructor() {
+    super("A blog post with this slug already exists.")
+    this.name = "BlogSlugConflictError"
+  }
+}
+
+async function ensureUniqueSlug(slug: string, excludeId?: ObjectId) {
+  const db = await getDb()
+  const query: Record<string, unknown> = { slug }
+  if (excludeId) query._id = { $ne: excludeId }
+  const existing = await db.collection("blogs").findOne(query)
+  if (existing) throw new BlogSlugConflictError()
+}
+
 function extractFirstImage(content: string) {
   const m = content.match(/<img[^>]+src="([^"]+)"/i)
   return m ? m[1] : undefined
@@ -67,10 +83,12 @@ export async function createBlog(data: Partial<BlogRecord>) {
   const db = await getDb()
   const now = new Date().toISOString()
   const content = data.content || ""
+  const slug = data.slug || `untitled-${Date.now()}`
+  await ensureUniqueSlug(slug)
   
   const doc: BlogRecord = {
     title: data.title || "Untitled",
-    slug: data.slug || `untitled-${Date.now()}`,
+    slug,
     content: content,
     excerpt: data.excerpt || generateExcerpt(content),
     thumbnail: data.thumbnail || extractFirstImage(content) || undefined,
@@ -98,8 +116,12 @@ export async function createBlog(data: Partial<BlogRecord>) {
 export async function updateBlog(id: string, updates: Partial<BlogRecord>) {
   const db = await getDb()
   const oid = new ObjectId(id)
+
+  if (typeof updates.slug === "string") {
+    await ensureUniqueSlug(updates.slug, oid)
+  }
   
-  if (updates.content) {
+  if (typeof updates.content === "string") {
     if (!updates.thumbnail) {
       const first = extractFirstImage(updates.content)
       if (first) updates.thumbnail = first
@@ -127,18 +149,21 @@ export async function deleteBlog(id: string) {
   return result.deletedCount > 0
 }
 
-export async function getBlogBySlug(slug: string) {
+export async function getBlogBySlug(slug: string): Promise<(BlogRecord & { _id: string }) | null> {
   const db = await getDb()
-  const doc = await db.collection("blogs").findOne({ slug, status: "published" })
+  const doc = await db.collection("blogs").findOne(
+    { slug, status: "published" },
+    { sort: { publishedAt: -1, updatedAt: -1, createdAt: -1 } },
+  )
   if (!doc) return null
-  return { ...doc, _id: doc._id.toString() }
+  return { ...doc, _id: doc._id.toString() } as BlogRecord & { _id: string }
 }
 
-export async function getBlogById(id: string) {
+export async function getBlogById(id: string): Promise<(BlogRecord & { _id: string }) | null> {
   const db = await getDb()
   const doc = await db.collection("blogs").findOne({ _id: new ObjectId(id) })
   if (!doc) return null
-  return { ...doc, _id: doc._id.toString() }
+  return { ...doc, _id: doc._id.toString() } as BlogRecord & { _id: string }
 }
 
 export async function listPublishedBlogs(limit = 20, skip = 0) {
@@ -169,6 +194,7 @@ export async function publishBlog(id: string, opts: { title?: string; excerpt?: 
   const oid = new ObjectId(id)
   const doc = await db.collection("blogs").findOne({ _id: oid })
   if (!doc) return null
+  if (!blogContentText(typeof doc.content === "string" ? doc.content : "")) return null
 
   const thumbnail = doc.thumbnail || extractFirstImage(doc.content || "")
   const now = new Date()
@@ -187,8 +213,7 @@ export async function publishBlog(id: string, opts: { title?: string; excerpt?: 
   if (opts.excerpt) updates.excerpt = opts.excerpt
   if (opts.tags) updates.tags = opts.tags
   if (opts.scheduledAt) {
-    // Store as Date object for proper MongoDB comparison
-    updates.scheduledAt = new Date(opts.scheduledAt)
+    updates.scheduledAt = new Date(opts.scheduledAt).toISOString()
   }
   if (thumbnail) updates.thumbnail = thumbnail
 
@@ -390,11 +415,16 @@ export async function deleteMultipleComments(ids: string[]) {
 
 export async function processScheduledBlogs() {
   const db = await getDb()
-  const now = new Date().toISOString()
+  const nowDate = new Date()
+  const now = nowDate.toISOString()
   
   const scheduledPosts = await db.collection("blogs").find({
     status: "scheduled",
-    scheduledAt: { $lte: now }
+    $or: [
+      { scheduledAt: { $lte: now } },
+      // Include legacy scheduledAt values stored as BSON Date objects.
+      { scheduledAt: { $lte: nowDate } },
+    ],
   }).toArray()
   
   for (const post of scheduledPosts) {

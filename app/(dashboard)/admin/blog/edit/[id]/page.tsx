@@ -71,13 +71,12 @@ export default function EditBlogPostPage() {
         }),
       })
       const result = await res.json()
-      if (result.ok) {
-        console.log("Post updated:", result.post._id)
-        // Update local state with saved post data
-        setPost(result.post)
+      if (!res.ok || !result.ok || !result.post) {
+        throw new Error(result.error || "Unable to save blog post.")
       }
+      setPost(result.post)
     } catch (error) {
-      console.error("Error updating post:", error)
+      throw error instanceof Error ? error : new Error("Unable to save blog post.")
     }
   }
 
