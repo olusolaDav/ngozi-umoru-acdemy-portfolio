@@ -1,10 +1,10 @@
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
+import { useMemo, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { Clock, Calendar, Heart, Share2, ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
+import { Clock, Calendar, Heart, Share2, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
@@ -61,53 +61,13 @@ function formatBlogDate(dateString: string): string {
   })
 }
 
-export function BlogListingContent() {
+export function BlogListingContent({ initialPosts }: { initialPosts: BlogPost[] }) {
   const [search, setSearch] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [selectedTag, setSelectedTag] = useState<string | null>(null)
-  const [posts, setPosts] = useState<BlogPost[]>([])
-  const [loading, setLoading] = useState(true)
+  const posts = initialPosts
   const postsPerPage = 5
-
-  useEffect(() => {
-    async function fetchPosts() {
-      try {
-        const res = await fetch("/api/blog")
-        const data = await res.json()
-        if (data.ok && data.posts) {
-          setPosts(data.posts.map((p: any) => ({
-            _id: p._id || "",
-            title: p.title || "Untitled",
-            slug: p.slug || "",
-            content: p.content || "",
-            excerpt: p.excerpt || "",
-            thumbnail: p.thumbnail || "/data-protection-cybersecurity-cloud.jpg",
-            author: p.author || {
-              _id: p.authorId || "admin",
-              name: p.authorName || "Admin",
-              avatar: p.authorAvatar || "/professional-man-avatar.png",
-            },
-            status: p.status || "draft",
-            tags: p.tags || [],
-            views: p.views || 0,
-            commentsCount: p.commentsCount || 0,
-            likes: p.likes || 0,
-            shares: p.shares || 0,
-            readTime: p.readTime || 5,
-            createdAt: p.createdAt || new Date().toISOString(),
-            publishedAt: p.publishedAt,
-            updatedAt: p.updatedAt || new Date().toISOString(),
-          })))
-        }
-      } catch (error) {
-        console.error("Error fetching posts:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchPosts()
-  }, [])
 
   const filteredPosts = useMemo(() => {
     let result = [...posts]
@@ -158,18 +118,6 @@ export function BlogListingContent() {
   const paginatedPosts = filteredPosts.slice((currentPage - 1) * postsPerPage, currentPage * postsPerPage)
 
   const popularPosts = [...posts].sort((a, b) => b.views - a.views).slice(0, 3)
-
-  if (loading) {
-    return (
-      <section className="py-8 bg-background">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="flex h-64 items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div>
-        </div>
-      </section>
-    )
-  }
 
   return (
     <section className="py-8 bg-background">

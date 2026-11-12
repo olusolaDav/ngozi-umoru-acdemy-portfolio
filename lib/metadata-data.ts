@@ -9,7 +9,7 @@ export const defaultMetadata: SiteMetadata = {
   // Site-wide settings
   siteName: "Dr. Ngozi Blessing Umoru | Academic Portfolio",
   siteDescription: "Dynamic and student-centred Lecturer and Academic English Tutor with extensive experience teaching Academic English, EAP/ESL, Humanities, and Foundation-level courses across UK FE/HE settings.",
-  siteUrl: "https://ngoziumoru.com",
+  siteUrl: "https://www.ngoziumoru.info",
   locale: "en_GB",
   twitterHandle: undefined,
   
@@ -40,8 +40,8 @@ export const defaultMetadata: SiteMetadata = {
       ],
       ogTitle: "Dr. Ngozi Blessing Umoru | Academic English Tutor & Lecturer",
       ogDescription: "PhD researcher and Academic English Tutor with extensive UK FE/HE teaching experience. Specialising in EAP/ESL, Academic Writing, and Humanities instruction.",
-      ogImage: "/Ngozi Umoru.png",
-      canonicalUrl: "https://ngoziumoru.com",
+      ogImage: "/academic-portrait.png",
+      canonicalUrl: "https://www.ngoziumoru.info",
     },
     blog: {
       title: "Blog | Dr. Ngozi Blessing Umoru | Academic Insights & Education",
@@ -60,8 +60,8 @@ export const defaultMetadata: SiteMetadata = {
       ],
       ogTitle: "Blog | Dr. Ngozi Blessing Umoru",
       ogDescription: "Academic insights, education research, and teaching perspectives from a PhD researcher and Academic English Tutor.",
-      ogImage: "/Ngozi Umoru.png",
-      canonicalUrl: "https://ngoziumoru.com/blog",
+      ogImage: "/academic-portrait.png",
+      canonicalUrl: "https://www.ngoziumoru.info/blog",
     },
     contact: {
       title: "Contact | Dr. Ngozi Blessing Umoru | Academic Collaboration & Enquiries",
@@ -78,8 +78,8 @@ export const defaultMetadata: SiteMetadata = {
       ],
       ogTitle: "Contact | Dr. Ngozi Blessing Umoru",
       ogDescription: "Reach out for academic collaboration, tutoring enquiries, or research partnerships.",
-      ogImage: "/Ngozi Umoru.png",
-      canonicalUrl: "https://ngoziumoru.com/contact",
+      ogImage: "/academic-portrait.png",
+      canonicalUrl: "https://www.ngoziumoru.info/contact",
     },
     resources: {
       title: "Resources | Dr. Ngozi Blessing Umoru | Academic Materials & Downloads",
@@ -97,8 +97,8 @@ export const defaultMetadata: SiteMetadata = {
       ],
       ogTitle: "Resources | Dr. Ngozi Blessing Umoru",
       ogDescription: "Free academic resources, teaching materials, and educational downloads.",
-      ogImage: "/Ngozi Umoru.png",
-      canonicalUrl: "https://ngoziumoru.com/resources",
+      ogImage: "/academic-portrait.png",
+      canonicalUrl: "https://www.ngoziumoru.info/resources",
     },
   },
   

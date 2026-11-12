@@ -31,25 +31,26 @@ export const metadata: Metadata = {
     "ngozi umoru phd",
     "dr ngozi umoru"
   ].join(", "),
-  authors: [{ name: "Dr. Ngozi Blessing Umoru", url: "https://ngoziumoru.info" }],
+  authors: [{ name: "Dr. Ngozi Blessing Umoru", url: "https://www.ngoziumoru.info" }],
   creator: "Dr. Ngozi Blessing Umoru",
   publisher: "Dr. Ngozi Blessing Umoru",
   alternates: {
-    canonical: "https://ngoziumoru.info",
+    canonical: "https://www.ngoziumoru.info",
   },
   openGraph: {
     title: "Dr. Ngozi Blessing Umoru | Academic English Lecturer & EAP Tutor UK",
     description: "Award-winning PhD researcher and Academic English Tutor with extensive UK FE/HE teaching experience. Specialising in EAP/ESL, Academic Writing, and supporting international students in British higher education.",
-    url: "https://ngoziumoru.info",
+    url: "https://www.ngoziumoru.info",
     siteName: "Dr. Ngozi Blessing Umoru - Academic Portfolio",
     type: "profile",
     locale: "en_GB",
     images: [
       {
-        url: "https://ngoziumoru.info/og-image.jpg",
-        width: 1200,
-        height: 630,
+          url: "/academic-portrait.png",
+          width: 1024,
+          height: 680,
         alt: "Dr. Ngozi Blessing Umoru - Academic English Lecturer",
+          type: "image/png",
       },
     ],
   },
@@ -57,7 +58,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Dr. Ngozi Blessing Umoru | Academic English Lecturer UK",
     description: "PhD researcher and Academic English Tutor with extensive UK FE/HE teaching experience. Specialising in EAP/ESL and Academic Writing.",
-    images: ["https://ngoziumoru.info/og-image.jpg"],
+    images: ["/academic-portrait.png"],
   },
   robots: {
     index: true,

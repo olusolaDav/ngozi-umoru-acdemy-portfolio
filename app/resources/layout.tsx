@@ -30,25 +30,26 @@ export const metadata: Metadata = {
     "ngozi umoru resources",
     "education phd materials"
   ].join(", "),
-  authors: [{ name: "Dr. Ngozi Blessing Umoru", url: "https://ngoziumoru.info" }],
+  authors: [{ name: "Dr. Ngozi Blessing Umoru", url: "https://www.ngoziumoru.info" }],
   creator: "Dr. Ngozi Blessing Umoru",
   publisher: "Dr. Ngozi Blessing Umoru",
   alternates: {
-    canonical: "https://ngoziumoru.info/resources",
+    canonical: "https://www.ngoziumoru.info/resources",
   },
   openGraph: {
     title: "Academic Resources | Teaching Materials & Educational Resources UK",
     description: "Access free academic resources, teaching materials, and worksheets for Academic English, EAP/ESL, and Foundation courses. Curated by an experienced UK FE/HE lecturer.",
-    url: "https://ngoziumoru.info/resources",
+    url: "https://www.ngoziumoru.info/resources",
     siteName: "Dr. Ngozi Blessing Umoru - Academic Portfolio",
     type: "website",
     locale: "en_GB",
     images: [
       {
-        url: "https://ngoziumoru.info/og-image-resources.jpg",
-        width: 1200,
-        height: 630,
+          url: "/academic-portrait.png",
+          width: 1024,
+          height: 680,
         alt: "Academic Resources by Dr. Ngozi Blessing Umoru",
+          type: "image/png",
       },
     ],
   },
@@ -56,7 +57,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Academic Resources | Teaching Materials UK",
     description: "Free academic resources, teaching materials, and worksheets for Academic English and EAP courses.",
-    images: ["https://ngoziumoru.info/og-image-resources.jpg"],
+    images: ["/academic-portrait.png"],
   },
   robots: {
     index: true,

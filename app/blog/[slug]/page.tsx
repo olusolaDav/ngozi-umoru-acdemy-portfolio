@@ -7,10 +7,16 @@ import { RelatedBlogs } from "@/components/blog/related-blogs"
 import { ArticleSchema, BreadcrumbListSchema } from "@/components/structured-data"
 
 import { getBlogBySlug, listPublishedCommentsByPost, incrementBlogViews, type BlogRecord } from "@/lib/blog"
+import { absoluteSiteUrl, getSiteUrl, socialImageMetadata } from "@/lib/seo"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://ngoziumoru.info"
+const siteUrl = getSiteUrl()
+
+function safeIsoDate(value?: string) {
+  const date = value ? new Date(value) : new Date()
+  return Number.isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString()
+}
 
 interface BlogDetailPageProps {
   params: Promise<{ slug: string }>
@@ -27,15 +33,13 @@ export async function generateMetadata({ params }: BlogDetailPageProps): Promise
     }
   }
 
-  const postUrl = `${siteUrl}/blog/${post.slug}`
-  const thumbnailUrl = post.thumbnail?.startsWith('http') 
-    ? post.thumbnail 
-    : `${siteUrl}${post.thumbnail || '/images/blog-default-og.jpg'}`
-  const publishedTime = post.publishedAt || post.createdAt
-  const modifiedTime = post.updatedAt || post.createdAt
+  const postUrl = absoluteSiteUrl(`/blog/${encodeURIComponent(post.slug)}`)
+  const socialImage = socialImageMetadata(post.thumbnail, post.title)
+  const publishedTime = safeIsoDate(post.publishedAt || post.createdAt)
+  const modifiedTime = safeIsoDate(post.updatedAt || post.createdAt)
 
   return {
-    title: `${post.title} | Dr. Ngozi Blessing Umoru - Academic Blog UK`,
+    title: `${post.title} | Dr. Ngozi Blessing Umoru`,
     description: post.excerpt || `Expert insights on ${post.title} from Dr. Ngozi Blessing Umoru, Award-winning Academic English Lecturer and PhD researcher in the UK. Read evidence-based teaching strategies and scholarly research.`,
     keywords: post.tags || ["academic english", "eap teaching", "higher education uk", "pedagogy research", "teaching methodologies"],
     authors: [{ name: post.authorName || "Dr. Ngozi Blessing Umoru", url: "https://ngoziumoru.info" }],
@@ -62,16 +66,9 @@ export async function generateMetadata({ params }: BlogDetailPageProps): Promise
       siteName: "Dr. Ngozi Blessing Umoru - Academic Portfolio",
       title: post.title,
       description: post.excerpt || `Expert insights on ${post.title} from an award-winning UK-based Academic English Lecturer and PhD researcher.`,
-      images: [
-        {
-          url: thumbnailUrl,
-          width: 1200,
-          height: 630,
-          alt: post.title,
-        },
-      ],
-      publishedTime: new Date(publishedTime).toISOString(),
-      modifiedTime: new Date(modifiedTime).toISOString(),
+      images: [socialImage],
+      publishedTime,
+      modifiedTime,
       authors: [post.authorName || "Dr. Ngozi Blessing Umoru"],
       tags: post.tags || [],
     },
@@ -79,11 +76,11 @@ export async function generateMetadata({ params }: BlogDetailPageProps): Promise
       card: "summary_large_image",
       title: post.title,
       description: post.excerpt || `Expert insights on ${post.title} from Dr. Ngozi Blessing Umoru.`,
-      images: [thumbnailUrl],
+      images: [socialImage.url],
     },
     other: {
-      "article:published_time": new Date(publishedTime).toISOString(),
-      "article:modified_time": new Date(modifiedTime).toISOString(),
+      "article:published_time": publishedTime,
+      "article:modified_time": modifiedTime,
       "article:author": post.authorName || "Academic Portfolio",
       "article:section": post.tags?.[0] || "General",
     },
@@ -126,6 +123,9 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
     updatedAt: post.updatedAt,
   }
 
+  const postUrl = absoluteSiteUrl(`/blog/${encodeURIComponent(formattedPost.slug)}`)
+  const articleImage = socialImageMetadata(post.thumbnail, formattedPost.title).url
+
   const formattedComments = commentsData.map((c: any) => ({
     _id: c._id,
     postId: c.postId,
@@ -148,10 +148,10 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
       <ArticleSchema
         headline={formattedPost.title}
         description={formattedPost.excerpt}
-        url={`${siteUrl}/blog/${formattedPost.slug}`}
-        imageUrl={formattedPost.thumbnail}
-        datePublished={new Date(formattedPost.publishedAt || formattedPost.createdAt).toISOString()}
-        dateModified={new Date(formattedPost.updatedAt || formattedPost.createdAt).toISOString()}
+        url={postUrl}
+        imageUrl={articleImage}
+        datePublished={safeIsoDate(formattedPost.publishedAt || formattedPost.createdAt)}
+        dateModified={safeIsoDate(formattedPost.updatedAt || formattedPost.createdAt)}
         authorName={formattedPost.author.name}
         authorUrl={siteUrl}
         tags={formattedPost.tags}
@@ -159,8 +159,8 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
       <BreadcrumbListSchema
         items={[
           { name: "Home", url: siteUrl },
-          { name: "Blog", url: `${siteUrl}/blog` },
-          { name: formattedPost.title, url: `${siteUrl}/blog/${formattedPost.slug}` },
+          { name: "Blog", url: absoluteSiteUrl("/blog") },
+          { name: formattedPost.title, url: postUrl },
         ]}
       />
       

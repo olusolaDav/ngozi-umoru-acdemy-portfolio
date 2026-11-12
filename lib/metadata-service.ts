@@ -5,6 +5,7 @@
 
 import type { Metadata } from "next"
 import type { SiteMetadata } from "./site-types"
+import { absoluteSiteUrl, DEFAULT_SOCIAL_IMAGE, getSiteUrl, socialImageMetadata } from "./seo"
 
 // Check if we're in build/static generation mode
 const isBuildTime = process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL && typeof window === 'undefined'
@@ -48,8 +49,11 @@ export async function getSiteMetadata(): Promise<SiteMetadata | null> {
 // Generate Next.js metadata from site metadata
 export function generateMetadata(siteMetadata: SiteMetadata, page: keyof SiteMetadata["pages"] = "home"): Metadata {
   const pageData = siteMetadata.pages[page]
+  const image = socialImageMetadata(pageData.ogImage || DEFAULT_SOCIAL_IMAGE, pageData.ogTitle || pageData.title)
+  const canonicalUrl = pageData.canonicalUrl ? absoluteSiteUrl(pageData.canonicalUrl) : getSiteUrl()
   
   return {
+    metadataBase: new URL(getSiteUrl()),
     title: pageData.title || siteMetadata.siteName,
     description: pageData.description || siteMetadata.siteDescription,
     keywords: pageData.keywords.join(", "),
@@ -61,16 +65,9 @@ export function generateMetadata(siteMetadata: SiteMetadata, page: keyof SiteMet
     openGraph: {
       title: pageData.ogTitle || pageData.title,
       description: pageData.ogDescription || pageData.description,
-      url: pageData.canonicalUrl || `${siteMetadata.siteUrl}`,
+      url: canonicalUrl,
       siteName: siteMetadata.siteName,
-      images: pageData.ogImage ? [
-        {
-          url: pageData.ogImage,
-          width: 1200,
-          height: 630,
-          alt: siteMetadata.schemaOrg.name
-        }
-      ] : [],
+      images: [image],
       locale: siteMetadata.locale,
       type: "website",
     },
@@ -81,12 +78,12 @@ export function generateMetadata(siteMetadata: SiteMetadata, page: keyof SiteMet
       title: pageData.ogTitle || pageData.title,
       description: pageData.ogDescription || pageData.description,
       creator: siteMetadata.twitterHandle,
-      images: pageData.ogImage ? [pageData.ogImage] : [],
+      images: [image.url],
     },
     
     // Canonical URL
     alternates: {
-      canonical: pageData.canonicalUrl || `${siteMetadata.siteUrl}`,
+      canonical: canonicalUrl,
     },
     
     // Robots
@@ -129,7 +126,7 @@ export function generateStructuredData(siteMetadata: SiteMetadata) {
 
   const website = {
     "@context": "https://schema.org",
-    "@type": "Website",
+    "@type": "WebSite",
     name: siteMetadata.siteName,
     description: siteMetadata.siteDescription,
     url: siteMetadata.siteUrl,
@@ -147,6 +144,7 @@ export function generateStructuredData(siteMetadata: SiteMetadata) {
 
 // Default metadata fallback
 export const defaultMetadataFallback: Metadata = {
+  metadataBase: new URL(getSiteUrl()),
   title: "Dr. Ngozi Blessing Umoru | Academic Portfolio",
   description: "Dynamic and student-centred Lecturer and Academic English Tutor with extensive experience teaching Academic English, EAP/ESL, Humanities, and Foundation-level courses across UK FE/HE settings.",
   keywords: "academic english tutor uk, eap tutor, higher education lecturer, ngozi umoru",
@@ -157,16 +155,20 @@ export const defaultMetadataFallback: Metadata = {
   openGraph: {
     title: "Dr. Ngozi Blessing Umoru | Academic English Tutor & Lecturer",
     description: "PhD researcher and Academic English Tutor with extensive UK FE/HE teaching experience.",
-    url: "https://ngoziumoru.com",
+    url: getSiteUrl(),
     siteName: "Dr. Ngozi Blessing Umoru | Academic Portfolio",
     locale: "en_GB",
     type: "website",
+    images: [
+      socialImageMetadata(DEFAULT_SOCIAL_IMAGE, "Dr. Ngozi Blessing Umoru"),
+    ],
   },
   
   twitter: {
     card: "summary_large_image",
     title: "Dr. Ngozi Blessing Umoru | Academic English Tutor & Lecturer",
     description: "PhD researcher and Academic English Tutor with extensive UK FE/HE teaching experience.",
+    images: [socialImageMetadata(DEFAULT_SOCIAL_IMAGE, "Dr. Ngozi Blessing Umoru").url],
   },
   
   robots: {

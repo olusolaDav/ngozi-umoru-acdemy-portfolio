@@ -5,8 +5,9 @@ import { Analytics } from "@vercel/analytics/next"
 import { Toaster } from "sonner"
 import "./globals.css"
 import { AuthProvider } from "@/lib/hooks/use-auth"
-import { getSiteMetadata, generateMetadata, generateStructuredData, defaultMetadataFallback } from "@/lib/metadata-service"
+import { getSiteMetadata, generateMetadata as buildSiteMetadata, generateStructuredData, defaultMetadataFallback } from "@/lib/metadata-service"
 import { GoogleAnalytics } from "@/components/analytics"
+import { getSiteUrl } from "@/lib/seo"
 
 // Force dynamic rendering for the entire app since we fetch site metadata
 export const dynamic = 'force-dynamic'
@@ -14,8 +15,15 @@ export const dynamic = 'force-dynamic'
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
-// Use default metadata - dynamic metadata will be handled per page
-export const metadata: Metadata = defaultMetadataFallback
+export async function generateMetadata(): Promise<Metadata> {
+  const siteMetadata = await getSiteMetadata()
+  const generated = siteMetadata ? buildSiteMetadata(siteMetadata) : defaultMetadataFallback
+
+  return {
+    ...generated,
+    metadataBase: new URL(getSiteUrl()),
+  }
+}
 
 export default async function RootLayout({
   children,
@@ -24,7 +32,9 @@ export default async function RootLayout({
 }>) {
   // Get structured data for JSON-LD
   const siteMetadata = await getSiteMetadata()
-  const structuredData = siteMetadata ? generateStructuredData(siteMetadata) : null
+  const structuredData = siteMetadata
+    ? generateStructuredData({ ...siteMetadata, siteUrl: getSiteUrl() })
+    : null
 
   return (
     <html lang="en-GB">

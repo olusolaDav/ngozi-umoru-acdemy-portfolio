@@ -31,25 +31,26 @@ export const metadata: Metadata = {
     "contact dr ngozi umoru",
     "ngozi umoru consultation"
   ].join(", "),
-  authors: [{ name: "Dr. Ngozi Blessing Umoru", url: "https://ngoziumoru.info" }],
+  authors: [{ name: "Dr. Ngozi Blessing Umoru", url: "https://www.ngoziumoru.info" }],
   creator: "Dr. Ngozi Blessing Umoru",
   publisher: "Dr. Ngozi Blessing Umoru",
   alternates: {
-    canonical: "https://ngoziumoru.info/contact",
+    canonical: "https://www.ngoziumoru.info/contact",
   },
   openGraph: {
     title: "Contact | Get in Touch with Dr. Ngozi Blessing Umoru",
     description: "Contact for academic collaborations, research inquiries, teaching opportunities, or EAP/ESL consultations. Available for UK FE/HE institutions.",
-    url: "https://ngoziumoru.info/contact",
+    url: "https://www.ngoziumoru.info/contact",
     siteName: "Dr. Ngozi Blessing Umoru - Academic Portfolio",
     type: "website",
     locale: "en_GB",
     images: [
       {
-        url: "https://ngoziumoru.info/og-image-contact.jpg",
-        width: 1200,
-        height: 630,
+          url: "/academic-portrait.png",
+          width: 1024,
+          height: 680,
         alt: "Contact Dr. Ngozi Blessing Umoru",
+          type: "image/png",
       },
     ],
   },
@@ -57,7 +58,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Contact | Dr. Ngozi Blessing Umoru",
     description: "Get in touch for academic collaborations, research inquiries, or teaching opportunities.",
-    images: ["https://ngoziumoru.info/og-image-contact.jpg"],
+    images: ["/academic-portrait.png"],
   },
   robots: {
     index: true,

@@ -162,7 +162,7 @@ export async function getBlogById(id: string): Promise<(BlogRecord & { _id: stri
   return { ...doc, readTime: calculateReadTime(doc.content || ""), _id: doc._id.toString() } as BlogRecord & { _id: string }
 }
 
-export async function listPublishedBlogs(limit = 20, skip = 0) {
+export async function listPublishedBlogs(limit = 20, skip = 0): Promise<Array<BlogRecord & { _id: string }>> {
   const db = await getDb()
   const cursor = db
     .collection("blogs")
@@ -171,7 +171,11 @@ export async function listPublishedBlogs(limit = 20, skip = 0) {
     .skip(skip)
     .limit(limit)
   const docs = await cursor.toArray()
-  return docs.map((d) => ({ ...d, readTime: calculateReadTime(d.content || ""), _id: d._id.toString() }))
+  return docs.map((d) => ({
+    ...d,
+    readTime: calculateReadTime(d.content || ""),
+    _id: d._id.toString(),
+  } as BlogRecord & { _id: string }))
 }
 
 export async function listAllBlogs(limit = 50, skip = 0, status?: BlogStatus) {

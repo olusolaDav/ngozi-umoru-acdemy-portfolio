@@ -1,6 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
+import Image from "next/image"
 import { MessageSquare, Clock, Calendar, Heart, Share2, Eye, Link2, Instagram, ArrowLeft } from "lucide-react"
 import { ScrollAnimation } from "@/components/ui/scroll-animation"
 import { cn } from "@/lib/utils"
@@ -300,6 +301,18 @@ const getShareUrl = () => typeof window !== 'undefined' ? window.location.href :
             </div>
           </ScrollAnimation>
         </div>
+        {post.thumbnail ? (
+          <div className="relative mx-auto mt-8 aspect-[1200/630] w-full max-w-5xl overflow-hidden rounded-2xl bg-muted">
+            <Image
+              src={post.thumbnail}
+              alt={post.title}
+              fill
+              priority
+              sizes="(max-width: 768px) 100vw, 1024px"
+              className="object-cover"
+            />
+          </div>
+        ) : null}
         </div>
       </div>
     </section>
