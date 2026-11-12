@@ -7,6 +7,7 @@
     import { Eye, Send, Save, FileText, Clock } from "lucide-react"
     import slugify from "slugify"
     import { toast } from "@/hooks/use-toast"
+    import { blogContentText, estimateBlogReadTime } from "@/lib/blog-content"
     import "react-quill-new/dist/quill.snow.css"
 
     // Dynamically import ReactQuill with proper ref forwarding
@@ -224,11 +225,9 @@
 
       // Calculate word count and reading time
       useEffect(() => {
-        const safeContent = content || ""
-        const text = safeContent.replace(/<[^>]+>/g, "")
-        const words = text.trim().split(/\s+/).filter(Boolean).length
+        const words = blogContentText(content).split(/\s+/).filter(Boolean).length
         setWordCount(words)
-        setReadingTime(Math.ceil(words / 200)) // 200 WPM average reading speed
+        setReadingTime(estimateBlogReadTime(content))
       }, [content])
 
       // Get first image from content for thumbnail
@@ -378,7 +377,7 @@
         }
         
         // Check if content has actual text (not just empty HTML tags)
-        const textContent = (content || "").replace(/<[^>]+>/g, "").trim()
+        const textContent = blogContentText(content)
         if (!textContent) {
           errors.push("Blog content cannot be empty")
         }

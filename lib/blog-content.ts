@@ -50,3 +50,9 @@ export function blogContentText(value: string | null | undefined) {
     .replace(/\s+/g, " ")
     .trim();
 }
+
+export function estimateBlogReadTime(value: string | null | undefined, wordsPerMinute = 200) {
+  const text = blogContentText(value);
+  const words = text ? text.split(/\s+/).filter(Boolean).length : 0;
+  return Math.max(1, Math.ceil(words / wordsPerMinute));
+}

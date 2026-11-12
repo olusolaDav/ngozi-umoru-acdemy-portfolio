@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 import { getDb } from "./mongodb"
-import { blogContentText } from "./blog-content"
+import { blogContentText, estimateBlogReadTime } from "./blog-content"
 
 export type BlogStatus = "published" | "draft" | "scheduled"
 export type CommentStatus = "published" | "pending" | "unpublished"
@@ -68,9 +68,7 @@ function extractFirstImage(content: string) {
 }
 
 function calculateReadTime(content: string): number {
-  const text = content.replace(/<[^>]+>/g, "")
-  const words = text.trim().split(/\s+/).filter(Boolean).length
-  return Math.ceil(words / 200) || 1
+  return estimateBlogReadTime(content)
 }
 
 function generateExcerpt(content: string, maxLength = 160): string {
@@ -126,9 +124,7 @@ export async function updateBlog(id: string, updates: Partial<BlogRecord>) {
       const first = extractFirstImage(updates.content)
       if (first) updates.thumbnail = first
     }
-    if (!updates.readTime) {
-      updates.readTime = calculateReadTime(updates.content)
-    }
+    updates.readTime = calculateReadTime(updates.content)
     if (!updates.excerpt) {
       updates.excerpt = generateExcerpt(updates.content)
     }
@@ -156,14 +152,14 @@ export async function getBlogBySlug(slug: string): Promise<(BlogRecord & { _id: 
     { sort: { publishedAt: -1, updatedAt: -1, createdAt: -1 } },
   )
   if (!doc) return null
-  return { ...doc, _id: doc._id.toString() } as BlogRecord & { _id: string }
+  return { ...doc, readTime: calculateReadTime(doc.content || ""), _id: doc._id.toString() } as BlogRecord & { _id: string }
 }
 
 export async function getBlogById(id: string): Promise<(BlogRecord & { _id: string }) | null> {
   const db = await getDb()
   const doc = await db.collection("blogs").findOne({ _id: new ObjectId(id) })
   if (!doc) return null
-  return { ...doc, _id: doc._id.toString() } as BlogRecord & { _id: string }
+  return { ...doc, readTime: calculateReadTime(doc.content || ""), _id: doc._id.toString() } as BlogRecord & { _id: string }
 }
 
 export async function listPublishedBlogs(limit = 20, skip = 0) {
@@ -175,7 +171,7 @@ export async function listPublishedBlogs(limit = 20, skip = 0) {
     .skip(skip)
     .limit(limit)
   const docs = await cursor.toArray()
-  return docs.map((d) => ({ ...d, _id: d._id.toString() }))
+  return docs.map((d) => ({ ...d, readTime: calculateReadTime(d.content || ""), _id: d._id.toString() }))
 }
 
 export async function listAllBlogs(limit = 50, skip = 0, status?: BlogStatus) {
@@ -186,7 +182,7 @@ export async function listAllBlogs(limit = 50, skip = 0, status?: BlogStatus) {
   const cursor = db.collection("blogs").find(query).sort({ createdAt: -1 }).skip(skip).limit(limit)
   const docs = await cursor.toArray()
   const total = await db.collection("blogs").countDocuments(query)
-  return { posts: docs.map((d) => ({ ...d, _id: d._id.toString() })), total }
+  return { posts: docs.map((d) => ({ ...d, readTime: calculateReadTime(d.content || ""), _id: d._id.toString() })), total }
 }
 
 export async function publishBlog(id: string, opts: { title?: string; excerpt?: string; tags?: string[]; scheduledAt?: string }) {
@@ -203,6 +199,7 @@ export async function publishBlog(id: string, opts: { title?: string; excerpt?: 
   const updates: any = {
     status: opts.scheduledAt ? "scheduled" : "published",
     updatedAt: nowIso,
+    readTime: calculateReadTime(doc.content || ""),
   }
   
   if (!opts.scheduledAt) {

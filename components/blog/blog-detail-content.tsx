@@ -1,6 +1,5 @@
 "use client"
 
-import { ScrollAnimation } from "@/components/ui/scroll-animation"
 import { blogContentText, normalizeBlogHtmlForRender } from "@/lib/blog-content"
 
 interface BlogPost {
@@ -44,15 +43,13 @@ export function BlogDetailContent({ post }: BlogDetailContentProps) {
 
         
 
-          <ScrollAnimation delay={0.15}>
-            {hasContent ? (
-              <div className="blog-article-content" dangerouslySetInnerHTML={{ __html: content }} />
-            ) : (
-              <p className="rounded-xl border border-border bg-muted/30 p-5 text-muted-foreground">
-                This article is being updated. Please check back soon.
-              </p>
-            )}
-          </ScrollAnimation>
+          {hasContent ? (
+            <div className="blog-article-content" dangerouslySetInnerHTML={{ __html: content }} />
+          ) : (
+            <p className="rounded-xl border border-border bg-muted/30 p-5 text-muted-foreground">
+              This article is being updated. Please check back soon.
+            </p>
+          )}
         </div>
       </div>
     </section>
