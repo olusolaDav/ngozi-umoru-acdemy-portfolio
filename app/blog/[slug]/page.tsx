@@ -6,7 +6,7 @@ import { BlogComments } from "@/components/blog/blog-comments"
 import { RelatedBlogs } from "@/components/blog/related-blogs"
 import { ArticleSchema, BreadcrumbListSchema } from "@/components/structured-data"
 
-import { getBlogBySlug, listPublishedCommentsByPost, incrementBlogViews, type BlogRecord } from "@/lib/blog"
+import { getBlogBySlug, listPublishedCommentsByPost, type BlogRecord } from "@/lib/blog"
 import { absoluteSiteUrl, getSiteUrl, socialImageMetadata } from "@/lib/seo"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
@@ -94,8 +94,6 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
   if (!post) {
     notFound()
   }
-
-  await incrementBlogViews(post._id as string)
 
   const commentsData = await listPublishedCommentsByPost(post._id as string)
   

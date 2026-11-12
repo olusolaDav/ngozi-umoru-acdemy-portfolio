@@ -1,6 +1,6 @@
 "use client"
 
-import { blogContentText, normalizeBlogHtmlForRender } from "@/lib/blog-content"
+import { blogContentText, normalizeBlogHtmlForRender, removeFeaturedImageFromContent } from "@/lib/blog-content"
 
 interface BlogPost {
   _id: string
@@ -31,7 +31,10 @@ interface BlogDetailContentProps {
 }
 
 export function BlogDetailContent({ post }: BlogDetailContentProps) {
-  const content = normalizeBlogHtmlForRender(post.content)
+  const content = removeFeaturedImageFromContent(
+    normalizeBlogHtmlForRender(post.content),
+    post.thumbnail,
+  )
   const hasContent = Boolean(blogContentText(content))
 
  

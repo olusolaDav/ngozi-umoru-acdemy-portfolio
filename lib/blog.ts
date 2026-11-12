@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb"
-import { getDb } from "./mongodb"
+import { createHash } from "node:crypto"
+import { getDb, getMongoClient } from "./mongodb"
 import { blogContentText, estimateBlogReadTime } from "./blog-content"
 
 export type BlogStatus = "published" | "draft" | "scheduled"
@@ -239,12 +240,37 @@ export async function unpublishBlog(id: string) {
   return { ...doc, _id: doc._id.toString() }
 }
 
-export async function incrementBlogViews(id: string) {
+export async function recordUniqueBlogView(id: string, visitorId: string) {
+  const client = await getMongoClient()
   const db = await getDb()
-  await db.collection("blogs").updateOne(
-    { _id: new ObjectId(id) },
-    { $inc: { views: 1 } }
-  )
+  const viewId = createHash("sha256").update(`${id}:${visitorId}`).digest("hex")
+  const session = client.startSession()
+  let counted = false
+
+  try {
+    await session.withTransaction(async () => {
+      counted = false
+      await db.collection("blog_viewers").insertOne(
+        { _id: viewId, postId: id, countedAt: new Date().toISOString() },
+        { session },
+      )
+
+      const update = await db.collection("blogs").updateOne(
+        { _id: new ObjectId(id), status: "published" },
+        { $inc: { views: 1 } },
+        { session },
+      )
+      if (update.matchedCount !== 1) throw new Error("Published blog post not found")
+      counted = true
+    })
+  } catch (error) {
+    if ((error as { code?: number }).code !== 11000) throw error
+  } finally {
+    await session.endSession()
+  }
+
+  const post = await db.collection("blogs").findOne({ _id: new ObjectId(id) }, { projection: { views: 1 } })
+  return { counted, views: post?.views || 0 }
 }
 
 export async function createComment(data: Partial<CommentRecord>) {

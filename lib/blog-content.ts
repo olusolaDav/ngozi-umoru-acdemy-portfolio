@@ -40,6 +40,34 @@ export function normalizeBlogHtmlForRender(value: string | null | undefined) {
     .replace(/(href|src)\s*=\s*(["'])\s*javascript:[\s\S]*?\2/gi, '$1="#"');
 }
 
+function comparableImageUrl(value: string) {
+  const decoded = decodeHtmlEntities(value).trim();
+  if (!decoded) return "";
+
+  try {
+    const url = new URL(decoded, "https://blog-image.local");
+    const cloudinaryAsset = url.pathname.match(/\/upload\/(?:.*\/)?(v\d+\/.*)$/i);
+    const path = cloudinaryAsset ? `/${cloudinaryAsset[1]}` : url.pathname;
+    return `${url.origin}${path}`.toLowerCase();
+  } catch {
+    return decoded.split(/[?#]/, 1)[0].toLowerCase();
+  }
+}
+
+/** Remove the featured image from the body when the hero already displays it. */
+export function removeFeaturedImageFromContent(value: string, thumbnail?: string | null) {
+  if (!value || !thumbnail) return value;
+
+  const featuredImage = comparableImageUrl(thumbnail);
+  const contentWithoutFeaturedImage = value.replace(/<img\b[^>]*>/gi, (imageTag) => {
+    const source = imageTag.match(/\bsrc\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i);
+    const imageUrl = source?.[1] ?? source?.[2] ?? source?.[3] ?? "";
+    return comparableImageUrl(imageUrl) === featuredImage ? "" : imageTag;
+  });
+
+  return contentWithoutFeaturedImage.replace(/<p\b[^>]*>\s*(?:<br\s*\/?>\s*)*<\/p>/gi, "");
+}
+
 export function blogContentText(value: string | null | undefined) {
   return decodeHtmlEntities(
     normalizeBlogHtmlForRender(value)

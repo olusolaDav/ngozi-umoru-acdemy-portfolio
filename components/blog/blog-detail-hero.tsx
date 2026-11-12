@@ -5,7 +5,7 @@ import Image from "next/image"
 import { MessageSquare, Clock, Calendar, Heart, Share2, Eye, Link2, Instagram, ArrowLeft } from "lucide-react"
 import { ScrollAnimation } from "@/components/ui/scroll-animation"
 import { cn } from "@/lib/utils"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import Link from "next/link"
@@ -75,7 +75,32 @@ export function BlogDetailHero({ post }: BlogDetailHeroProps) {
   
    const [likes, setLikes] = useState(post.likes || 0)
     const [shares, setShares] = useState(post.shares || 0)
+    const [views, setViews] = useState(post.views || 0)
     const [isLiked, setIsLiked] = useState(false)
+    const viewRequestSlug = useRef<string | null>(null)
+
+    useEffect(() => {
+      if (viewRequestSlug.current === post.slug) return
+      viewRequestSlug.current = post.slug
+      let active = true
+
+      fetch(`/api/blog/${encodeURIComponent(post.slug)}/view`, {
+        method: "POST",
+        cache: "no-store",
+      })
+        .then(async (response) => {
+          if (!response.ok) return null
+          return response.json() as Promise<{ views?: number }>
+        })
+        .then((data) => {
+          if (active && typeof data?.views === "number") setViews(data.views)
+        })
+        .catch((error) => console.error("Unable to record blog view:", error))
+
+      return () => {
+        active = false
+      }
+    }, [post.slug])
 
      useEffect(() => {
         const key = `blog_like_${post._id}`
@@ -294,7 +319,7 @@ const getShareUrl = () => typeof window !== 'undefined' ? window.location.href :
               </DropdownMenu>
               <div className="flex items-center gap-2 rounded-full border px-3 py-1">
                 <Eye className="h-4 w-4" />
-                <span>{post.views || 0}</span>
+                <span>{views}</span>
               </div>
      
 
