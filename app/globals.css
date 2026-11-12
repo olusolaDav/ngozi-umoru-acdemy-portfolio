@@ -185,11 +185,22 @@
   }
 
   .blog-article-content {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    padding-inline: clamp(1rem, 3vw, 2rem);
     color: var(--foreground);
     font-size: 1.125rem;
     line-height: 1.85;
     overflow-wrap: normal;
     word-break: normal;
+    white-space: normal !important;
+  }
+
+  .blog-article-content *:not(pre):not(code) {
+    max-width: 100%;
+    white-space: normal !important;
   }
 
   .blog-article-content > * + * {
@@ -199,6 +210,8 @@
   .blog-article-content p,
   .blog-article-content li {
     line-height: 1.85;
+    text-align: justify !important;
+    text-justify: inter-word;
   }
 
   .blog-article-content h1,

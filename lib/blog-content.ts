@@ -37,7 +37,8 @@ export function normalizeBlogHtmlForRender(value: string | null | undefined) {
   return html
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script\s*>/gi, "")
     .replace(/\s+on[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, "")
-    .replace(/(href|src)\s*=\s*(["'])\s*javascript:[\s\S]*?\2/gi, '$1="#"');
+    .replace(/(href|src)\s*=\s*(["'])\s*javascript:[\s\S]*?\2/gi, '$1="#"')
+    .replace(/&nbsp;|&#0*160;|&#x0*a0;|\u00a0/gi, " ");
 }
 
 function comparableImageUrl(value: string) {
