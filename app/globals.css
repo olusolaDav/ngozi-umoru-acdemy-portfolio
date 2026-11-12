@@ -210,9 +210,11 @@
   .blog-article-content p,
   .blog-article-content li {
     line-height: 1.85;
-    text-align: justify !important;
-    text-justify: inter-word;
   }
+
+  .blog-article-content .ql-align-center { text-align: center; }
+  .blog-article-content .ql-align-right { text-align: right; }
+  .blog-article-content .ql-align-justify { text-align: justify; }
 
   .blog-article-content h1,
   .blog-article-content h2,
